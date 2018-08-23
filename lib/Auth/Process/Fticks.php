@@ -45,7 +45,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
             assert('array_key_exists("Attributes", $state)');
             if (array_key_exists($this->userId, $state['Attributes'])) {
                 if (is_array($state['Attributes'][$this->userId])) {
-                    $uid = (array_values($state['Attributes'][$this->userId]))[0];
+                    $uid = $state['Attributes'][$this->userId][0];
                 } else {
                     $uid = $state['Attributes'][$this->userId];
                 }
@@ -211,7 +211,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
             assert('array_key_exists("Attributes", $state)');
             if (array_key_exists($this->realm, $state['Attributes'])) {
                 if (is_array($state['Attributes'][$this->realm])) {
-                    $fticks['REALM'] = (array_values($state['Attributes'][$this->realm]))[0];
+                    $fticks['REALM'] = $state['Attributes'][$this->realm][0];
                 } else {
                     $fticks['REALM'] = $state['Attributes'][$this->realm];
                 }
