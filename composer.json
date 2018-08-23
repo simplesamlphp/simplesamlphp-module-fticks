@@ -1,0 +1,26 @@
+{
+    "name": "safire-ac-za/simplesamlphp-module-fticks",
+    "description": "SimpleSAMLphp module to record F-Ticks statistics",
+    "type": "simplesamlphp-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Guy Halse",
+			"homepage": "http://orcid.org/0000-0002-9388-8592"
+        }
+    ],
+    "require": {
+        "simplesamlphp/composer-module-installer": "^1.1"
+    },
+    "require-dev": {
+        "simplesamlphp/simplesamlphp": ">=1.14",
+        "phpunit/phpunit": "~3.7"
+    },
+    "autoload-dev": {
+      "files": ["tests/_autoload_modules.php"]
+    },
+    "support": {
+        "issues": "https://github.com/safire-ac-za/simplesamlphp-module-fticks/issues",
+        "source": "https://github.com/safire-ac-za/simplesamlphp-module-fticks"
+    }
+}
