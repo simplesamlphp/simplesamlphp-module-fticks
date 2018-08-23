@@ -24,3 +24,10 @@ Documentation
 
 See [docs/authproc_fticks.md](https://github.com/safire-ac-za/simplesamlphp-module-fticks/blob/master/docs/authproc_fticks.md).
 
+Acknowledgements
+----------------
+
+Some work on making SimpleSAMLphp log in F-ticks format was done by NIIF, and is available at [NIIF/simplesamlphp-module-ftickslogger](https://github.com/NIIF/simplesamlphp-module-ftickslogger). This module may derive ideas from their work.
+
+Likewise, some ideas came from the [Shibboleth IdP's F-ticks implimentation](https://wiki.shibboleth.net/confluence/display/IDP30/FTICKSLoggingConfiguration), and some of the config options should look familiar to Shibboleth users.
+
