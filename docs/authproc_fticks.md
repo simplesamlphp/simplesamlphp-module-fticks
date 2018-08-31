@@ -30,19 +30,19 @@ The filter supports the following configuration options:
 
 `logdest`
 :   Destination for F-ticks logs. Must be one of the following options:
-    * `simplesamlphp` - use SimpleSAMLphp's built-in logging mechanism (this is the default).
-    * `local` - log using the PHP [syslog](http://php.net/manual/en/function.syslog.php) functions, potentially avoiding some of the extra information SimpleSAMLphp includes in logs.
-    * `remote` - log to a remote RFC 5424 syslog server using UDP.
-    * `errorlog` - log using PHP's [error_log](http://php.net/manual/en/function.error-log.php) function, probably into the web server logs.
-    * `stdout` - write to standard out, primarily for debugging.
+> * `simplesamlphp` - use SimpleSAMLphp's built-in logging mechanism (this is the default).
+> * `local` - log using the PHP [syslog](http://php.net/manual/en/function.syslog.php) functions, potentially avoiding some of the extra information SimpleSAMLphp includes in logs.
+> * `remote` - log to a remote RFC 5424 syslog server using UDP.
+> * `errorlog` - log using PHP's [error_log](http://php.net/manual/en/function.error-log.php) function, probably into the web server logs.
+> * `stdout` - write to standard out, primarily for debugging.
 
 `logconfig`
 :   An array of configuration options for the logging method. The exact values supported depend on the specific `logdest`, but the following are understood:
-    * `priority` - the syslog priority or severity as a PHP constant, defaulting to `LOG_INFO`. _[local, remote]_
-    * `facility` - the syslog facility, defaulting to `logging.facility` from the main config. _[local, remote]_
-    * `processname` - the syslog process name, defaulting to `logging.processname` from the main config. _[local, remote]_
-    * `host` - the hostname of the remote syslog server, defaulting to `localhost`. _[remote]_
-    * `port` - the port of the remote syslog server, defaulting to `514`. _[remote]_
+> * `priority` - the syslog priority or severity as a PHP constant, defaulting to `LOG_INFO`. _[local, remote]_
+> * `facility` - the syslog facility, defaulting to `logging.facility` from the main config. _[local, remote]_
+> * `processname` - the syslog process name, defaulting to `logging.processname` from the main config. _[local, remote]_
+> * `host` - the hostname of the remote syslog server, defaulting to `localhost`. _[remote]_
+> * `port` - the port of the remote syslog server, defaulting to `514`. _[remote]_
 
 Examples
 --------
