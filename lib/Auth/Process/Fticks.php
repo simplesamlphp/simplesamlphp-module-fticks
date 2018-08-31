@@ -20,6 +20,12 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
     /** @var string A salt to apply when digesting usernames (defaults to config file salt) */
     private $salt;
 
+    /** @var string The logging backend */
+    private $logdest = 'simplesamlphp';
+
+    /** @var string Backend specific logging config */
+    private $logconfig = array();
+
     /** @var string The username attribute to use */
     private $userId = false;
 
@@ -31,6 +37,67 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
 
     /** @var array F-ticks attributes to exclude */
     private $exclude = array();
+
+
+    /**
+     * Log a message to the desired destination
+     *
+     * @param string $msg message to log
+     */
+    private function _log($msg)
+    {
+        switch ($this->logdest) {
+            /* local syslog call, avoiding SimpleSAMLphp's wrapping */
+            case 'local':
+            case 'syslog':
+                assert('array_key_exists("processname", $this->logconfig)');
+                assert('array_key_exists("facility", $this->logconfig)');
+                openlog($this->logconfig['processname'], LOG_PID, $this->logconfig['facility']);
+                syslog(array_key_exists('priority', $this->logconfig) ? $this->logconfig['priority'] : LOG_INFO, $msg);
+                break;
+
+            /* remote syslog call via UDP */
+            case 'remote':
+                assert('array_key_exists("processname", $this->logconfig)');
+                assert('array_key_exists("facility", $this->logconfig)');
+                /* assemble a syslog message per RFC 5424 */
+                $rfc5424_message = sprintf('<%d>', ((($this->logconfig['facility'] & 0x03f8) >> 3) * 8) + (array_key_exists('priority', $this->logconfig) ? $this->logconfig['priority'] : LOG_INFO)); // pri
+                $rfc5424_message .= '1 '; // ver
+                $rfc5424_message .= gmdate('Y-m-d\TH:i:s.v\Z '); // timestamp
+                $rfc5424_message .= gethostname() . ' '; // hostname
+                $rfc5424_message .= $this->logconfig['processname'] . ' '; // app-name
+                $rfc5424_message .= posix_getpid() . ' '; // procid
+                $rfc5424_message .= '- '; // msgid
+                $rfc5424_message .= '- '; // structured-data
+                $rfc5424_message .= $msg;
+                /* send it to the remote host */
+                $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+                socket_sendto(
+                    $sock,
+                    $rfc5424_message,
+                    strlen($rfc5424_message),
+                    0,
+                    gethostbyname(array_key_exists('host', $this->logconfig) ? $this->logconfig['host'] : 'localhost'),
+                    array_key_exists('port', $this->logconfig) ? $this->logconfig['port'] : 514
+                );
+                break;
+
+            case 'errorlog':
+                error_log($msg);
+                break;
+
+            /* mostly for unit testing */
+            case 'stdout':
+                echo $msg . "\n";
+                break;
+
+            /* SimpleSAMLphp's builtin logging */
+            case 'simplesamlphp':
+            default:
+                \SimpleSAML\Logger::stats($msg);
+                break;
+        }
+    }
 
     /**
      * Generate a PN hash
@@ -69,7 +136,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
         }
         return false;
     }
-    
+
     /**
      * Escape F-ticks values
      *
@@ -148,7 +215,38 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
             } elseif (is_string($config['exclude'])) {
                 $this->exclude = array($config['exclude']);
             } else {
-                throw new \SimpleSAML\Error\Exception('exclude must be an array');
+                throw new \SimpleSAML\Error\Exception('F-ticks exclude must be an array');
+            }
+        }
+
+        /* match SSP config or we risk mucking up the openlog call */
+        $globalConfig = \SimpleSAML_Configuration::getInstance();
+        $defaultFacility = $globalConfig->getInteger('logging.facility', defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER);
+        $defaultProcessName = $globalConfig->getString('logging.processname', 'SimpleSAMLphp');
+        if (array_key_exists('logconfig', $config)) {
+            if (is_array($config['logconfig'])) {
+                $this->logconfig = $config['logconfig'];
+            } else {
+                throw new \SimpleSAML\Error\Exception('F-ticks logconfig must be an array');
+            }
+        } else {
+            $this->logconfig['facility'] = $defaultFacility;
+            $this->logconfig['processname'] = $defaultProcessName;
+        }
+        if (array_key_exists('facility', $this->logconfig) and $this->logconfig['facility'] !== $defaultFacility) {
+            \SimpleSAML\Logger::warning('F-ticks syslog facility differs from global config');
+        }
+        if (array_key_exists('processname', $this->logconfig) and $this->logconfig['processname'] !== $defaultProcessName) {
+            \SimpleSAML\Logger::warning('F-ticks syslog processname differs from global config');
+        }
+
+        if (array_key_exists('logdest', $config)) {
+            if (is_string($config['logdest']) and
+                in_array($config['logdest'], array('local', 'remote', 'stdout', 'errorlog', 'simplesamlphp'))
+            ) {
+                $this->logdest = $config['logdest'];
+            } else {
+                throw new \SimpleSAML\Error\Exception('F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]');
             }
         }
     }
@@ -229,7 +327,8 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
             );
         }
 
-        \SimpleSAML\Logger::stats(
+        /* assemble an F-ticks log string */
+        $this->_log(
             'F-TICKS/'.$this->federation.'/'.self::$_fticksVersion.'#' .
             implode('#', array_map(
                 function($k, $v) {
