@@ -9,6 +9,7 @@ if (class_exists('\PHPUnit\Framework\TestCase', true) and !class_exists('\PHPUni
  */
 class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var array minimal request */
     private static $_minrequest = array(
         'Source' => array(
             'entityid' => 'https://localhost/sp',
@@ -18,6 +19,7 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         ),
     );
 
+    /** @var array SP request */
     private static $_sprequest = array(
         'saml:sp:IdP' => 'https://localhost/saml:sp:IdP',
         'saml:sp:SessionIndex' => 'saml:sp:SessionIndex',
@@ -27,6 +29,7 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         ),
     );
 
+    /** @var array IdP request */
     private static $_idprequest = array(
         'SimpleSAML_Auth_State.id' => 'SimpleSAML_Auth_State.id',
         'SimpleSAML_Auth_State.stage' => 'sspmod_core_Auth_UserPassBase.state',
@@ -47,6 +50,9 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         return $request;
     }
 
+    /**
+     * @return void
+     */
     protected function setUp()
     {
         \SimpleSAML_Configuration::loadFromArray(array(
@@ -59,6 +65,9 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         */
     }
 
+    /**
+     * @return void
+     */
     public function testMinimal()
     {
         $config = array('federation' => 'ACME', 'logdest' => 'stdout');
@@ -67,6 +76,9 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         $result = self::processFilter($config, $request);
     }
 
+    /**
+     * @return void
+     */
     public function testAsServiceProvider()
     {
         $config = array('federation' => 'ACME', 'logdest' => 'stdout',);
@@ -75,6 +87,9 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         $result = self::processFilter($config, $request);
     }
 
+    /**
+     * @return void
+     */
     public function testSPwithUserId()
     {
         $config = array('federation' => 'ACME', 'logdest' => 'stdout', 'userId' => 'eduPersonPrincipalName');
@@ -87,6 +102,9 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         $result = self::processFilter($config, $request);
     }
 
+    /**
+     * @return void
+     */
     public function testAsIdentityProvider()
     {
         $config = array('federation' => 'ACME', 'logdest' => 'stdout',);
@@ -95,6 +113,9 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         $result = self::processFilter($config, $request);
     }
 
+    /**
+     * @return void
+     */
     public function testExample()
     {
         $config = array(
@@ -116,6 +137,9 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         $result = self::processFilter($config, $request);
     }
 
+    /**
+     * @return void
+     */
     public function testFilteringArray()
     {
         $config = array('federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => array('PN', 'AM'));
@@ -124,6 +148,9 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
         $result = self::processFilter($config, $request);
     }
 
+    /**
+     * @return void
+     */
     public function testFilteringString()
     {
         $config = array('federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => 'AM');

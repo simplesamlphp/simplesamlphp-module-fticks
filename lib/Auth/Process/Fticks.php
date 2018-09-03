@@ -5,9 +5,9 @@
  * - https://wiki.geant.org/display/gn42jra3/F-ticks+standard
  * - https://tools.ietf.org/html/draft-johansson-fticks-00
  *
- * @author Guy Halse, http://orcid.org/0000-0002-9388-8592
+ * @author    Guy Halse, http://orcid.org/0000-0002-9388-8592
  * @copyright Copyright (c) 2018, South African Identity Federation
- * @package SimpleSAMLphp
+ * @package   SimpleSAMLphp
  */
 class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
 {
@@ -23,26 +23,27 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
     /** @var string The logging backend */
     private $logdest = 'simplesamlphp';
 
-    /** @var string Backend specific logging config */
+    /** @var array Backend specific logging config */
     private $logconfig = array();
 
-    /** @var string The username attribute to use */
+    /** @var string|false The username attribute to use */
     private $userId = false;
 
-    /** @var string The realm attribute to use */
+    /** @var string|false The realm attribute to use */
     private $realm = false;
 
     /** @var string The hashing algorithm to use */
     private $algorithm = 'sha256';
 
-    /** @var array F-ticks attributes to exclude */
-    private $exclude = array();
+    /** @var array|false F-ticks attributes to exclude */
+    private $exclude = false;
 
 
     /**
      * Log a message to the desired destination
      *
-     * @param string $msg message to log
+     * @param  string $msg message to log
+     * @return void
      */
     private function _log($msg)
     {
@@ -102,8 +103,8 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
     /**
      * Generate a PN hash
      *
-     * @param array $state
-     * @return string $hash
+     * @param  array $state
+     * @return string|false $hash
      * @throws \SimpleSAML\Error\Exception
      */
     private function _generatePNhash(&$state) {
@@ -143,7 +144,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
      * value = 1*( ALPHA / DIGIT / '_' / '-' / ':' / '.' / ',' / ';')
      * ... but add a / for entityIDs
      *
-     * @param string $value
+     * @param  string $value
      * @return string $value
      */
     private function _escapeFticks($value)
@@ -154,8 +155,8 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
     /**
      * Initialize this filter, parse configuration.
      *
-     * @param array $config Configuration information about this filter.
-     * @param mixed $reserved For future use.
+     * @param  array $config Configuration information about this filter.
+     * @param  mixed $reserved For future use.
      * @throws \SimpleSAML\Error\Exception
      */
     public function __construct($config, $reserved)
@@ -254,7 +255,8 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
     /**
      * Process this filter
      *
-     * @param mixed &$state
+     * @param  mixed &$state
+     * @return void
      */
     public function process(&$state)
     {
@@ -320,6 +322,10 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
         if ($this->exclude !== false) {
             $fticks = array_filter(
                 $fticks,
+                /**
+                 * @param  string $k
+                 * @return bool
+                 */
                 function($k) {
                     return !in_array($k, $this->exclude);
                 },
@@ -331,6 +337,11 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
         $this->_log(
             'F-TICKS/'.$this->federation.'/'.self::$_fticksVersion.'#' .
             implode('#', array_map(
+                /**
+                 * @param  string $k
+                 * @param  string $v
+                 * @return string
+                 */
                 function($k, $v) {
                     return $k.'='.$this->_escapeFticks($v);
                 },
