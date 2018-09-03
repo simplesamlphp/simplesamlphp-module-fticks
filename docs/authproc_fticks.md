@@ -44,6 +44,10 @@ The filter supports the following configuration options:
 > * `host` - the hostname of the remote syslog server, defaulting to `localhost`. _[remote]_
 > * `port` - the port of the remote syslog server, defaulting to `514`. _[remote]_
 
+Note that if `logdest` is `local` and you set either `processname` or `facility` to a value that's different to what is
+in SimpleSAMLphp's global config, you may end up with inconsistent output from SimpleSAMLphp's own logging. This is
+because PHP's [openlog](http://php.net/manual/en/function.openlog.php) function does not return a handle.
+
 Examples
 --------
 

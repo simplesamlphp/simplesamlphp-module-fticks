@@ -220,6 +220,16 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
             }
         }
 
+        if (array_key_exists('logdest', $config)) {
+            if (is_string($config['logdest']) and
+                in_array($config['logdest'], array('local', 'syslog', 'remote', 'stdout', 'errorlog', 'simplesamlphp'))
+            ) {
+                $this->logdest = $config['logdest'];
+            } else {
+                throw new \SimpleSAML\Error\Exception('F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]');
+            }
+        }
+
         /* match SSP config or we risk mucking up the openlog call */
         $globalConfig = \SimpleSAML_Configuration::getInstance();
         $defaultFacility = $globalConfig->getInteger('logging.facility', defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER);
@@ -234,20 +244,13 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
             $this->logconfig['facility'] = $defaultFacility;
             $this->logconfig['processname'] = $defaultProcessName;
         }
-        if (array_key_exists('facility', $this->logconfig) and $this->logconfig['facility'] !== $defaultFacility) {
-            \SimpleSAML\Logger::warning('F-ticks syslog facility differs from global config');
-        }
-        if (array_key_exists('processname', $this->logconfig) and $this->logconfig['processname'] !== $defaultProcessName) {
-            \SimpleSAML\Logger::warning('F-ticks syslog processname differs from global config');
-        }
-
-        if (array_key_exists('logdest', $config)) {
-            if (is_string($config['logdest']) and
-                in_array($config['logdest'], array('local', 'remote', 'stdout', 'errorlog', 'simplesamlphp'))
-            ) {
-                $this->logdest = $config['logdest'];
-            } else {
-                throw new \SimpleSAML\Error\Exception('F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]');
+        /* warn if we risk mucking up the openlog call (doesn't matter for remote syslog) */
+        if (in_array($this->logdest, array('local', 'syslog'))) {
+            if (array_key_exists('facility', $this->logconfig) and $this->logconfig['facility'] !== $defaultFacility) {
+                \SimpleSAML\Logger::warning('F-ticks syslog facility differs from global config which may cause SimpleSAMLphp\'s logging to behave inconsistently');
+            }
+            if (array_key_exists('processname', $this->logconfig) and $this->logconfig['processname'] !== $defaultProcessName) {
+                \SimpleSAML\Logger::warning('F-ticks syslog processname differs from global config which may cause SimpleSAMLphp\'s logging to behave inconsistently');
             }
         }
     }
