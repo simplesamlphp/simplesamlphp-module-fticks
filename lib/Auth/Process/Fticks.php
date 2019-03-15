@@ -1,4 +1,7 @@
 <?php
+
+namespace SimpleSAML\Module\fticks\Auth\Process;
+
 /**
  * Filter to log F-ticks stats data
  * See also:
@@ -6,10 +9,10 @@
  * - https://tools.ietf.org/html/draft-johansson-fticks-00
  *
  * @author    Guy Halse, http://orcid.org/0000-0002-9388-8592
- * @copyright Copyright (c) 2018, South African Identity Federation
+ * @copyright Copyright (c) 2019, South African Identity Federation
  * @package   SimpleSAMLphp
  */
-class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
+class Fticks extends \SimpleSAML\Auth\ProcessingFilter
 {
     /** @var string F-ticks version number */
     private static $_fticksVersion = '1.0';
@@ -24,7 +27,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
     private $logdest = 'simplesamlphp';
 
     /** @var array Backend specific logging config */
-    private $logconfig = array();
+    private $logconfig = [];
 
     /** @var string|false The username attribute to use */
     private $userId = false;
@@ -214,7 +217,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
             if (is_array($config['exclude'])) {
                 $this->exclude = $config['exclude'];
             } elseif (is_string($config['exclude'])) {
-                $this->exclude = array($config['exclude']);
+                $this->exclude = [$config['exclude']];
             } else {
                 throw new \SimpleSAML\Error\Exception('F-ticks exclude must be an array');
             }
@@ -222,7 +225,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
 
         if (array_key_exists('logdest', $config)) {
             if (is_string($config['logdest']) and
-                in_array($config['logdest'], array('local', 'syslog', 'remote', 'stdout', 'errorlog', 'simplesamlphp'))
+                in_array($config['logdest'], ['local', 'syslog', 'remote', 'stdout', 'errorlog', 'simplesamlphp'])
             ) {
                 $this->logdest = $config['logdest'];
             } else {
@@ -231,7 +234,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
         }
 
         /* match SSP config or we risk mucking up the openlog call */
-        $globalConfig = \SimpleSAML_Configuration::getInstance();
+        $globalConfig = \SimpleSAML\Configuration::getInstance();
         $defaultFacility = $globalConfig->getInteger('logging.facility', defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER);
         $defaultProcessName = $globalConfig->getString('logging.processname', 'SimpleSAMLphp');
         if (array_key_exists('logconfig', $config)) {
@@ -245,7 +248,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
             $this->logconfig['processname'] = $defaultProcessName;
         }
         /* warn if we risk mucking up the openlog call (doesn't matter for remote syslog) */
-        if (in_array($this->logdest, array('local', 'syslog'))) {
+        if (in_array($this->logdest, ['local', 'syslog'])) {
             if (array_key_exists('facility', $this->logconfig) and $this->logconfig['facility'] !== $defaultFacility) {
                 \SimpleSAML\Logger::warning('F-ticks syslog facility differs from global config which may cause SimpleSAMLphp\'s logging to behave inconsistently');
             }
@@ -269,7 +272,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
         assert('array_key_exists("Source", $state)');
         assert('array_key_exists("entityid", $state["Source"])');
 
-        $fticks = array();
+        $fticks = [];
 
         /* AFAIK the AuthProc will only execute if there is prior success */
         $fticks['RESULT'] = 'OK';
@@ -285,7 +288,7 @@ class sspmod_fticks_Auth_Process_Fticks extends SimpleSAML_Auth_ProcessingFilter
         $fticks['RP'] = $state['Destination']['entityid'];
 
         /* SAML session id */
-        $session = \SimpleSAML_Session::getSessionFromRequest();
+        $session = \SimpleSAML\Session::getSessionFromRequest();
         $fticks['CSI'] = $session->getTrackID();
 
         /* Authentication method identifier */

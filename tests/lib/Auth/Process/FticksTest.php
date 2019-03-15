@@ -1,40 +1,44 @@
 <?php
+
+namespace SimpleSAML\Test\Module\fticks\Auth\Process;
+
 // Alias the PHPUnit 6.0 ancestor if available, else fall back to legacy ancestor
 if (class_exists('\PHPUnit\Framework\TestCase', true) and !class_exists('\PHPUnit_Framework_TestCase', true)) {
     class_alias('\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase', true);
 }
+require_once(dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/lib/Auth/Process/Fticks.php');
 
 /**
  * Test for the core:CardinalitySingle filter.
  */
-class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
+class FticksTest extends \PHPUnit_Framework_TestCase
 {
     /** @var array minimal request */
-    private static $_minrequest = array(
-        'Source' => array(
+    private static $_minrequest = [
+        'Source' => [
             'entityid' => 'https://localhost/sp',
-        ),
-        'Destination' => array(
+        ],
+        'Destination' => [
             'entityid' => 'https://localhost/idp',
-        ),
-    );
+        ],
+    ];
 
     /** @var array SP request */
-    private static $_sprequest = array(
+    private static $_sprequest =[
         'saml:sp:IdP' => 'https://localhost/saml:sp:IdP',
         'saml:sp:SessionIndex' => 'saml:sp:SessionIndex',
-        'saml:sp:State' => array(
+        'saml:sp:State' => [
             'saml:sp:AuthnContext' => 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
             'saml:AuthnInstant' => 1000,
-        ),
-    );
+        ],
+    ];
 
     /** @var array IdP request */
-    private static $_idprequest = array(
+    private static $_idprequest = [
         'SimpleSAML_Auth_State.id' => 'SimpleSAML_Auth_State.id',
         'SimpleSAML_Auth_State.stage' => 'sspmod_core_Auth_UserPassBase.state',
         'UserID' => 'user1@example.org',
-    );
+    ];
 
     /**
      * Helper function to run the filter with a given configuration.
@@ -45,7 +49,7 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
      */
     private static function processFilter(array $config, array $request)
     {
-        $filter = new \sspmod_fticks_Auth_Process_Fticks($config, null);
+        $filter = new \SimpleSAML\Module\fticks\Auth\Process\Fticks($config, null);
         $filter->process($request);
         return $request;
     }
@@ -55,13 +59,13 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        \SimpleSAML_Configuration::loadFromArray(array(
+        \SimpleSAML\Configuration::loadFromArray([
             'secretsalt' => 'secretsalt',
-        ), '[ARRAY]', 'simplesaml');
+        ], '[ARRAY]', 'simplesaml');
         /*
-        $rm = new ReflectionMethod('SimpleSAML\Logger', 'createLoggingHandler');
+        $rm = new ReflectionMethod('\SimpleSAML\Logger', 'createLoggingHandler');
         $rm->setAccessible(true);
-        $rm->invoke('SimpleSAML\Logger\StandardErrorLoggingHandler');
+        $rm->invoke('\SimpleSAML\Logger\StandardErrorLoggingHandler');
         */
     }
 
@@ -70,7 +74,7 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
      */
     public function testMinimal()
     {
-        $config = array('federation' => 'ACME', 'logdest' => 'stdout');
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout'];
         $request = self::$_minrequest;
         $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL','/').'[^#]+#TS=\d+#$/');
         $result = self::processFilter($config, $request);
@@ -81,7 +85,7 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
      */
     public function testAsServiceProvider()
     {
-        $config = array('federation' => 'ACME', 'logdest' => 'stdout',);
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout',];
         $request = array_merge(self::$_minrequest, self::$_sprequest);
         $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/saml:sp:IdP#RP=https://localhost/idp#CSI=CL','/').'[^#]+'.preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified#TS=1000#','/').'$/');
         $result = self::processFilter($config, $request);
@@ -92,12 +96,12 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
      */
     public function testSPwithUserId()
     {
-        $config = array('federation' => 'ACME', 'logdest' => 'stdout', 'userId' => 'eduPersonPrincipalName');
-        $request = array_merge(self::$_minrequest, self::$_sprequest, array(
-            'Attributes' => array(
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'userId' => 'eduPersonPrincipalName'];
+        $request = array_merge(self::$_minrequest, self::$_sprequest, [
+            'Attributes' => [
                 'eduPersonPrincipalName' => 'user2@example.net',
-            ),
-        ));
+            ],
+        ]);
         $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/saml:sp:IdP#RP=https://localhost/idp#CSI=CL','/').'[^#]+'.preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified#PN=e5d066a96d5809a21264e153013c3c793e6574cb77afdfa248ad2cefab9b0451#TS=1000#','/').'$/');
         $result = self::processFilter($config, $request);
     }
@@ -107,7 +111,7 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
      */
     public function testAsIdentityProvider()
     {
-        $config = array('federation' => 'ACME', 'logdest' => 'stdout',);
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout',];
         $request = array_merge(self::$_minrequest, self::$_idprequest);
         $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL','/').'[^#]+'.preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:Password#PN=d844a9a0666bb3990e88f72b8f5c20accbcfa46f7b8a7ab38593bfbbab6e9cbc#TS=','/').'\d+#$/');
         $result = self::processFilter($config, $request);
@@ -118,21 +122,21 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
      */
     public function testExample()
     {
-        $config = array(
+        $config = [
             'federation' => 'ACME',
             'salt' => 'someVerySecretStringDifferentFromTheDefault',
             'userId' => 'eduPersonPrincipalName',
             'realm' => 'schacHomeOrganization',
             'algorithm' => 'sha512',
-            'exclude' => array('PN'),
+            'exclude' => ['PN'],
             'logdest' => 'stdout',
-        );
-        $request = array_merge(self::$_minrequest, self::$_idprequest, array(
-            'Attributes' => array(
+        ];
+        $request = array_merge(self::$_minrequest, self::$_idprequest, [
+            'Attributes' => [
                 'eduPersonPrincipalName' => 'user3@example.com',
                 'schacHomeOrganization' => 'example.com',
-            ),
-        ));
+            ],
+        ]);
         $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL','/').'[^#]+'.preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:Password#TS=','/').'\d+#REALM=example.com#$/');
         $result = self::processFilter($config, $request);
     }
@@ -142,7 +146,7 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
      */
     public function testFilteringArray()
     {
-        $config = array('federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => array('PN', 'AM'));
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => ['PN', 'AM']];
         $request = array_merge(self::$_minrequest, self::$_idprequest);
         $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL','/').'[^#]+#TS=\d+#$/');
         $result = self::processFilter($config, $request);
@@ -153,7 +157,7 @@ class sspmod_fticks_Auth_Process_FticksTest extends \PHPUnit_Framework_TestCase
      */
     public function testFilteringString()
     {
-        $config = array('federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => 'AM');
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => 'AM'];
         $request = array_merge(self::$_minrequest, self::$_idprequest);
         $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL','/').'[^#]+'.preg_quote('#PN=d844a9a0666bb3990e88f72b8f5c20accbcfa46f7b8a7ab38593bfbbab6e9cbc#TS=','/').'\d+#$/');
         $result = self::processFilter($config, $request);

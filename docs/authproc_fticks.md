@@ -53,40 +53,40 @@ Examples
 
 In its simplest form, the filter is configured like this:
 
-    'authproc' => array(
-        50 => array(
+    'authproc' => [
+        50 => [
             'class' => 'fticks:Fticks',
             'federation' => 'ACME',
-        ),
-    ),
+        ],
+    ],
 
 A more complete example looks like:
 
-    'authproc' => array(
-        50 => array(
+    'authproc' => [
+        50 => [
             'class' => 'fticks:Fticks',
             'federation' => 'ACME',
             'salt' => 'someVerySecretStringDifferentFromTheDefault',
             'userId' => 'eduPersonPrincipalName',
             'realm' => 'schacHomeOrganization',
             'algorithm' => 'sha512',
-            'exclude' => array('PN'),
-        ),
-    ),
+            'exclude' => ['PN'],
+        ],
+    ],
 
 Remote logging can be done like this:
 
-    'authproc' => array(
-        50 => array(
+    'authproc' => [
+        50 => a[
             'class' => 'fticks:Fticks',
             'federation' => 'ACME',
             'logdest' => 'remote',
-            'logconfig' => array(
+            'logconfig' => [
                 'host' => '90.147.166.156',
                 'port' => 514,
-            ),
-        ),
-    ),
+            ],
+        ],
+    ],
 
 F-ticks output
 --------------
