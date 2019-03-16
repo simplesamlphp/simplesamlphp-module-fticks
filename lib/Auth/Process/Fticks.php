@@ -15,7 +15,7 @@ namespace SimpleSAML\Module\fticks\Auth\Process;
 class Fticks extends \SimpleSAML\Auth\ProcessingFilter
 {
     /** @var string F-ticks version number */
-    private static $_fticksVersion = '1.0';
+    private static $fticksVersion = '1.0';
 
     /** @var string F-ticks federation identifier */
     private $federation;
@@ -48,7 +48,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * @param  string $msg message to log
      * @return void
      */
-    private function _log($msg)
+    private function log($msg)
     {
         switch ($this->logdest) {
             /* local syslog call, avoiding SimpleSAMLphp's wrapping */
@@ -65,7 +65,11 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
                 assert('array_key_exists("processname", $this->logconfig)');
                 assert('array_key_exists("facility", $this->logconfig)');
                 /* assemble a syslog message per RFC 5424 */
-                $rfc5424_message = sprintf('<%d>', ((($this->logconfig['facility'] & 0x03f8) >> 3) * 8) + (array_key_exists('priority', $this->logconfig) ? $this->logconfig['priority'] : LOG_INFO)); // pri
+                $rfc5424_message = sprintf(
+                    '<%d>',
+                    ((($this->logconfig['facility'] & 0x03f8) >> 3) * 8) +
+                    (array_key_exists('priority', $this->logconfig) ? $this->logconfig['priority'] : LOG_INFO)
+                ); // pri
                 $rfc5424_message .= '1 '; // ver
                 $rfc5424_message .= gmdate('Y-m-d\TH:i:s.v\Z '); // timestamp
                 $rfc5424_message .= gethostname() . ' '; // hostname
@@ -110,7 +114,8 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * @return string|false $hash
      * @throws \SimpleSAML\Error\Exception
      */
-    private function _generatePNhash(&$state) {
+    private function generatePNhash(&$state)
+    {
         /* get a user id */
         if ($this->userId !== false) {
             assert('array_key_exists("Attributes", $state)');
@@ -150,7 +155,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * @param  string $value
      * @return string $value
      */
-    private function _escapeFticks($value)
+    private function escapeFticks($value)
     {
         return preg_replace('/[^A-Za-z0-9_\-:.,;\/]+/', '', $value);
     }
@@ -300,7 +305,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
         }
 
         /* ePTID */
-        $pn = $this->_generatePNhash($state);
+        $pn = $this->generatePNhash($state);
         if ($pn !== false) {
             $fticks['PN'] = $pn;
         }
@@ -332,7 +337,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
                  * @param  string $k
                  * @return bool
                  */
-                function($k) {
+                function ($k) {
                     return !in_array($k, $this->exclude);
                 },
                 ARRAY_FILTER_USE_KEY
@@ -340,16 +345,16 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
         }
 
         /* assemble an F-ticks log string */
-        $this->_log(
-            'F-TICKS/'.$this->federation.'/'.self::$_fticksVersion.'#' .
+        $this->log(
+            'F-TICKS/'.$this->federation.'/'.self::$fticksVersion.'#' .
             implode('#', array_map(
                 /**
                  * @param  string $k
                  * @param  string $v
                  * @return string
                  */
-                function($k, $v) {
-                    return $k.'='.$this->_escapeFticks($v);
+                function ($k, $v) {
+                    return $k.'='.$this->escapeFticks($v);
                 },
                 array_keys($fticks),
                 $fticks
