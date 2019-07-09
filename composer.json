@@ -1,5 +1,5 @@
 {
-    "name": "safire-ac-za/simplesamlphp-module-fticks",
+    "name": "simplesamlphp/simplesamlphp-module-fticks",
     "description": "SimpleSAMLphp module to record F-Ticks statistics",
     "type": "simplesamlphp-module",
     "keywords": ["simplesamlphp", "fticks"],
@@ -29,8 +29,8 @@
         }
     },
     "support": {
-        "issues": "https://github.com/safire-ac-za/simplesamlphp-module-fticks/issues",
-        "source": "https://github.com/safire-ac-za/simplesamlphp-module-fticks"
+        "issues": "https://github.com/simplesamlphp/simplesamlphp-module-fticks/issues",
+        "source": "https://github.com/simplesamlphp/simplesamlphp-module-fticks"
     }
 }
 
