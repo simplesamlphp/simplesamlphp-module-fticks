@@ -54,16 +54,16 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
             /* local syslog call, avoiding SimpleSAMLphp's wrapping */
             case 'local':
             case 'syslog':
-                assert('array_key_exists("processname", $this->logconfig)');
-                assert('array_key_exists("facility", $this->logconfig)');
+                assert(array_key_exists("processname", $this->logconfig));
+                assert(array_key_exists("facility", $this->logconfig));
                 openlog($this->logconfig['processname'], LOG_PID, $this->logconfig['facility']);
                 syslog(array_key_exists('priority', $this->logconfig) ? $this->logconfig['priority'] : LOG_INFO, $msg);
                 break;
 
             /* remote syslog call via UDP */
             case 'remote':
-                assert('array_key_exists("processname", $this->logconfig)');
-                assert('array_key_exists("facility", $this->logconfig)');
+                assert(array_key_exists("processname", $this->logconfig));
+                assert(array_key_exists("facility", $this->logconfig));
                 /* assemble a syslog message per RFC 5424 */
                 $rfc5424_message = sprintf(
                     '<%d>',
@@ -118,7 +118,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
     {
         /* get a user id */
         if ($this->userId !== false) {
-            assert('array_key_exists("Attributes", $state)');
+            assert(array_key_exists("Attributes", $state));
             if (array_key_exists($this->userId, $state['Attributes'])) {
                 if (is_array($state['Attributes'][$this->userId])) {
                     $uid = $state['Attributes'][$this->userId][0];
@@ -169,7 +169,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      */
     public function __construct($config, $reserved)
     {
-        assert('is_array($config)');
+        assert(is_array($config));
         parent::__construct($config, $reserved);
 
         if (array_key_exists('federation', $config)) {
@@ -271,11 +271,11 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      */
     public function process(&$state)
     {
-        assert('is_array($state)');
-        assert('array_key_exists("Destination", $state)');
-        assert('array_key_exists("entityid", $state["Destination"])');
-        assert('array_key_exists("Source", $state)');
-        assert('array_key_exists("entityid", $state["Source"])');
+        assert(is_array($state));
+        assert(array_key_exists("Destination", $state));
+        assert(array_key_exists("entityid", $state["Destination"]));
+        assert(array_key_exists("Source", $state));
+        assert(array_key_exists("entityid", $state["Source"]));
 
         $fticks = [];
 
@@ -319,7 +319,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
 
         /* realm */
         if ($this->realm !== false) {
-            assert('array_key_exists("Attributes", $state)');
+            assert(array_key_exists("Attributes", $state));
             if (array_key_exists($this->realm, $state['Attributes'])) {
                 if (is_array($state['Attributes'][$this->realm])) {
                     $fticks['REALM'] = $state['Attributes'][$this->realm][0];
