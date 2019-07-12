@@ -10,7 +10,9 @@
 			"homepage": "http://orcid.org/0000-0002-9388-8592"
         }
     ],
-    "abandoned": "simplesamlphp/simplesamlphp-module-fticks",
+    "replaces": {
+        "safire-ac-za/simplesamlphp-module-fticks": ">=1.1.1"
+    },
     "config": {
         "preferred-install": {
             "simplesamlphp/simplesamlphp": "source",
