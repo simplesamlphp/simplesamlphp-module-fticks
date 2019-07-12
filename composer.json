@@ -10,13 +10,20 @@
 			"homepage": "http://orcid.org/0000-0002-9388-8592"
         }
     ],
+    "abandoned": "simplesamlphp/simplesamlphp-module-fticks",
+    "config": {
+        "preferred-install": {
+            "simplesamlphp/simplesamlphp": "source",
+            "*": "dist"
+        }
+    },
     "require": {
         "php": ">=5.6",
         "simplesamlphp/composer-module-installer": "~1.1"
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp": ">=1.17",
-        "phpunit/phpunit": "~4.8"
+        "phpunit/phpunit": "~5.7"
     },
     "autoload": {
         "psr-4": {
@@ -33,4 +40,3 @@
         "source": "https://github.com/simplesamlphp/simplesamlphp-module-fticks"
     }
 }
-

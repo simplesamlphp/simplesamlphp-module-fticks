@@ -2,9 +2,6 @@
 
 namespace SimpleSAML\Test\Module\fticks\Auth\Process;
 
-/**
- * Test for the core:CardinalitySingle filter.
- */
 class FticksTest extends \PHPUnit_Framework_TestCase
 {
     /** @var array minimal request */
