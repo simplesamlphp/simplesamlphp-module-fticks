@@ -4,7 +4,7 @@ namespace SimpleSAML\Module\fticks\Auth\Process;
 
 use SAML2\Constants;
 use SimpleSAML\Configuration;
-use SimpleSAML\Error\Exception
+use SimpleSAML\Error\Exception;
 use SimpleSAML\Logger;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
