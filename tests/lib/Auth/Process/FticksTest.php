@@ -2,7 +2,13 @@
 
 namespace SimpleSAML\Test\Module\fticks\Auth\Process;
 
-class FticksTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+use SimpleSAML\Module\fticks\Auth\Process\Fticks;
+use SimpleSAML\Configuration;
+use SimpleSAML\Logger;
+use SimpleSAML\Logger\StandardErrorLoggingHandler;
+
+class FticksTest extends TestCase
 {
     /** @var array minimal request */
     private static $minRequest = [
@@ -40,7 +46,7 @@ class FticksTest extends \PHPUnit_Framework_TestCase
      */
     private static function processFilter(array $config, array $request)
     {
-        $filter = new \SimpleSAML\Module\fticks\Auth\Process\Fticks($config, null);
+        $filter = new Fticks($config, null);
         $filter->process($request);
         return $request;
     }
@@ -50,13 +56,13 @@ class FticksTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        \SimpleSAML\Configuration::loadFromArray([
+        Configuration::loadFromArray([
             'secretsalt' => 'secretsalt',
         ], '[ARRAY]', 'simplesaml');
         /*
-        $rm = new ReflectionMethod('\SimpleSAML\Logger', 'createLoggingHandler');
+        $rm = new ReflectionMethod(Logger::class, 'createLoggingHandler');
         $rm->setAccessible(true);
-        $rm->invoke('\SimpleSAML\Logger\StandardErrorLoggingHandler');
+        $rm->invoke(StandardErrorLoggingHandler::class);
         */
     }
 
@@ -67,7 +73,8 @@ class FticksTest extends \PHPUnit_Framework_TestCase
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout'];
         $request = self::$minRequest;
-        $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/').'[^#]+#TS=\d+#$/');
+        $pattern = preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/');
+        $this->expectOutputRegex('/^'.$pattern.'[^#]+#TS=\d+#$/');
         $result = self::processFilter($config, $request);
     }
 
@@ -78,7 +85,9 @@ class FticksTest extends \PHPUnit_Framework_TestCase
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout',];
         $request = array_merge(self::$minRequest, self::$spRequest);
-        $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/saml:sp:IdP#RP=https://localhost/idp#CSI=CL', '/').'[^#]+'.preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified#TS=1000#', '/').'$/');
+        $pattern1 = preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/saml:sp:IdP#RP=https://localhost/idp#CSI=CL', '/');
+        $pattern2 = preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified#TS=1000#', '/');
+        $this->expectOutputRegex('/^'.$pattern1.'[^#]+'.$pattern2.'$/');
         $result = self::processFilter($config, $request);
     }
 
@@ -93,7 +102,9 @@ class FticksTest extends \PHPUnit_Framework_TestCase
                 'eduPersonPrincipalName' => 'user2@example.net',
             ],
         ]);
-        $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/saml:sp:IdP#RP=https://localhost/idp#CSI=CL', '/').'[^#]+'.preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified#PN=e5d066a96d5809a21264e153013c3c793e6574cb77afdfa248ad2cefab9b0451#TS=1000#', '/').'$/');
+        $pattern1 = preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/saml:sp:IdP#RP=https://localhost/idp#CSI=CL', '/');
+        $pattern2 = preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified#PN=e5d066a96d5809a21264e153013c3c793e6574cb77afdfa248ad2cefab9b0451#TS=1000#', '/');
+        $this->expectOutputRegex('/^'.$pattern1.'[^#]+'.$pattern2.'$/');
         $result = self::processFilter($config, $request);
     }
 
@@ -104,7 +115,9 @@ class FticksTest extends \PHPUnit_Framework_TestCase
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout',];
         $request = array_merge(self::$minRequest, self::$idpRequest);
-        $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/').'[^#]+'.preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:Password#PN=d844a9a0666bb3990e88f72b8f5c20accbcfa46f7b8a7ab38593bfbbab6e9cbc#TS=', '/').'\d+#$/');
+        $pattern1 = preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/');
+        $pattern2 = preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:Password#PN=d844a9a0666bb3990e88f72b8f5c20accbcfa46f7b8a7ab38593bfbbab6e9cbc#TS=', '/');
+        $this->expectOutputRegex('/^'.$pattern1.'[^#]+'.$pattern2.'\d+#$/');
         $result = self::processFilter($config, $request);
     }
 
@@ -128,7 +141,9 @@ class FticksTest extends \PHPUnit_Framework_TestCase
                 'schacHomeOrganization' => 'example.com',
             ],
         ]);
-        $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/').'[^#]+'.preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:Password#TS=', '/').'\d+#REALM=example.com#$/');
+        $pattern1 = preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/');
+        $pattern2 = preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:Password#TS=', '/');
+        $this->expectOutputRegex('/^'.$pattern1.'[^#]+'.$pattern2.'\d+#REALM=example.com#$/');
         $result = self::processFilter($config, $request);
     }
 
@@ -139,7 +154,8 @@ class FticksTest extends \PHPUnit_Framework_TestCase
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => ['PN', 'AM']];
         $request = array_merge(self::$minRequest, self::$idpRequest);
-        $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/').'[^#]+#TS=\d+#$/');
+        $pattern1 = preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/');
+        $this->expectOutputRegex('/^'.$pattern1.'[^#]+#TS=\d+#$/');
         $result = self::processFilter($config, $request);
     }
 
@@ -150,7 +166,9 @@ class FticksTest extends \PHPUnit_Framework_TestCase
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => 'AM'];
         $request = array_merge(self::$minRequest, self::$idpRequest);
-        $this->expectOutputRegex('/^'.preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/').'[^#]+'.preg_quote('#PN=d844a9a0666bb3990e88f72b8f5c20accbcfa46f7b8a7ab38593bfbbab6e9cbc#TS=', '/').'\d+#$/');
+        $pattern1 = preg_quote('F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL', '/');
+        $pattern2 = preg_quote('#PN=d844a9a0666bb3990e88f72b8f5c20accbcfa46f7b8a7ab38593bfbbab6e9cbc#TS=', '/');
+        $this->expectOutputRegex('/^'.$pattern1.'[^#]+'.$pattern2.'\d+#$/');
         $result = self::processFilter($config, $request);
     }
 }
