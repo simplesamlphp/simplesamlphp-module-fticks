@@ -103,12 +103,12 @@ jobs:
 
     - stage: quality
       php: 7.3
-      env: Coveralls
+      env: Codecov
       before_script:
         - composer update
         - php vendor/bin/phpunit
       script:
-        - php vendor/bin/php-coveralls -v
+        - bash <(curl -s https://codecov.io/bash)
 
     - stage: quality
       php: 7.3

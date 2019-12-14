@@ -1,7 +1,7 @@
 fticks:Fticks
 =============
 [![Build Status](https://travis-ci.org/simplesamlphp/simplesamlphp-module-fticks.svg?branch=master)](https://travis-ci.org/simplesamlphp/simplesamlphp-module-fticks)
-[![Coverage Status](https://coveralls.io/repos/github/simplesamlphp/simplesamlphp-module-fticks/badge.svg?branch=master)](https://coveralls.io/github/simplesamlphp/simplesamlphp-module-fticks?branch=master)
+[![Coverage Status](https://codecov.io/gh/simplesamlphp/simplesamlphp-module-fticks/branch/master/graph/badge.svg)](https://codecov.io/gh/simplesamlphp/simplesamlphp-module-fticks)
 
 Log statistics in the [F-ticks federation log format](https://wiki.geant.org/display/gn42jra3/F-ticks+standard).
 
