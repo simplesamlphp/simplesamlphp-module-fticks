@@ -54,7 +54,7 @@ class FticksTest extends TestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         Configuration::loadFromArray([
             'secretsalt' => 'secretsalt',
