@@ -139,15 +139,15 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
         }
 
         /* calculate a hash */
-        if (isset($uid) and is_string($uid)) {
+        if (isset($uid) && is_string($uid)) {
             $userdata = $this->federation;
             if (array_key_exists('saml:sp:IdP', $state)) {
-                $userdata .= strlen($state['saml:sp:IdP']).':'.$state['saml:sp:IdP'];
+                $userdata .= strlen($state['saml:sp:IdP']) . ':' . $state['saml:sp:IdP'];
             } else {
-                $userdata .= strlen($state['Source']['entityid']).':'.$state['Source']['entityid'];
+                $userdata .= strlen($state['Source']['entityid']) . ':' . $state['Source']['entityid'];
             }
-            $userdata .= strlen($state['Destination']['entityid']).':'.$state['Destination']['entityid'];
-            $userdata .= strlen($uid).':'.$uid;
+            $userdata .= strlen($state['Destination']['entityid']) . ':' . $state['Destination']['entityid'];
+            $userdata .= strlen($uid) . ':' . $uid;
             $userdata .= $this->salt;
 
             return hash($this->algorithm, $userdata);
@@ -187,17 +187,17 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
             if (is_string($config['federation'])) {
                 $this->federation = $config['federation'];
             } else {
-                throw new Exception('Federation identifier must be a string');
+                throw new \Exception('Federation identifier must be a string');
             }
         } else {
-            throw new Exception('Federation identifier must be set');
+            throw new \Exception('Federation identifier must be set');
         }
 
         if (array_key_exists('salt', $config)) {
             if (is_string($config['salt'])) {
                 $this->salt = $config['salt'];
             } else {
-                throw new Exception('Salt must be a string');
+                throw new \Exception('Salt must be a string');
             }
         } else {
             $this->salt = Utils\Config::getSecretSalt();
@@ -207,7 +207,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
             if (is_string($config['userId'])) {
                 $this->userId = $config['userId'];
             } else {
-                throw new Exception('UserId must be a string');
+                throw new \Exception('UserId must be a string');
             }
         }
 
@@ -215,17 +215,18 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
             if (is_string($config['realm'])) {
                 $this->realm = $config['realm'];
             } else {
-                throw new Exception('realm must be a string');
+                throw new \Exception('realm must be a string');
             }
         }
 
         if (array_key_exists('algorithm', $config)) {
-            if (is_string($config['algorithm'])
-                and in_array($config['algorithm'], hash_algos())
+            if (
+                is_string($config['algorithm'])
+                && in_array($config['algorithm'], hash_algos())
             ) {
                 $this->algorithm = $config['algorithm'];
             } else {
-                throw new Exception('algorithm must be a hash algorithm listed in hash_algos()');
+                throw new \Exception('algorithm must be a hash algorithm listed in hash_algos()');
             }
         }
 
@@ -235,29 +236,35 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
             } elseif (is_string($config['exclude'])) {
                 $this->exclude = [$config['exclude']];
             } else {
-                throw new Exception('F-ticks exclude must be an array');
+                throw new \Exception('F-ticks exclude must be an array');
             }
         }
 
         if (array_key_exists('logdest', $config)) {
-            if (is_string($config['logdest']) and
+            if (
+                is_string($config['logdest']) &&
                 in_array($config['logdest'], ['local', 'syslog', 'remote', 'stdout', 'errorlog', 'simplesamlphp'])
             ) {
                 $this->logdest = $config['logdest'];
             } else {
-                throw new Exception('F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]');
+                throw new \Exception(
+                    'F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]'
+                );
             }
         }
 
         /* match SSP config or we risk mucking up the openlog call */
         $globalConfig = Configuration::getInstance();
-        $defaultFacility = $globalConfig->getInteger('logging.facility', defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER);
+        $defaultFacility = $globalConfig->getInteger(
+            'logging.facility',
+            defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER
+        );
         $defaultProcessName = $globalConfig->getString('logging.processname', 'SimpleSAMLphp');
         if (array_key_exists('logconfig', $config)) {
             if (is_array($config['logconfig'])) {
                 $this->logconfig = $config['logconfig'];
             } else {
-                throw new Exception('F-ticks logconfig must be an array');
+                throw new \Exception('F-ticks logconfig must be an array');
             }
         } else {
             $this->logconfig['facility'] = $defaultFacility;
@@ -265,11 +272,23 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
         }
         /* warn if we risk mucking up the openlog call (doesn't matter for remote syslog) */
         if (in_array($this->logdest, ['local', 'syslog'])) {
-            if (array_key_exists('facility', $this->logconfig) and $this->logconfig['facility'] !== $defaultFacility) {
-                Logger::warning('F-ticks syslog facility differs from global config which may cause SimpleSAMLphp\'s logging to behave inconsistently');
+            if (
+                array_key_exists('facility', $this->logconfig)
+                && ($this->logconfig['facility'] !== $defaultFacility)
+            ) {
+                Logger::warning(
+                    'F-ticks syslog facility differs from global config which may cause'
+                    . ' SimpleSAMLphp\'s logging to behave inconsistently'
+                );
             }
-            if (array_key_exists('processname', $this->logconfig) and $this->logconfig['processname'] !== $defaultProcessName) {
-                Logger::warning('F-ticks syslog processname differs from global config which may cause SimpleSAMLphp\'s logging to behave inconsistently');
+            if (
+                array_key_exists('processname', $this->logconfig)
+                && ($this->logconfig['processname'] !== $defaultProcessName)
+            ) {
+                Logger::warning(
+                    'F-ticks syslog processname differs from global config which may cause'
+                    . ' SimpleSAMLphp\'s logging to behave inconsistently'
+                );
             }
         }
     }
@@ -308,9 +327,15 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
         $fticks['CSI'] = $session->getTrackID();
 
         /* Authentication method identifier */
-        if (array_key_exists('saml:sp:State', $state) and array_key_exists('saml:sp:AuthnContext', $state['saml:sp:State'])) {
+        if (
+            array_key_exists('saml:sp:State', $state)
+            && array_key_exists('saml:sp:AuthnContext', $state['saml:sp:State'])
+        ) {
             $fticks['AM'] = $state['saml:sp:State']['saml:sp:AuthnContext'];
-        } elseif (array_key_exists('SimpleSAML_Auth_State.stage', $state) and preg_match('/UserPass/', $state['SimpleSAML_Auth_State.stage'])) {
+        } elseif (
+            array_key_exists('SimpleSAML_Auth_State.stage', $state)
+            && preg_match('/UserPass/', $state['SimpleSAML_Auth_State.stage'])
+        ) {
             /* hack to try identify LDAP et al as Password */
             $fticks['AM'] = Constants::AC_PASSWORD;
         }
@@ -322,7 +347,10 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
         }
 
         /* timestamp */
-        if (array_key_exists('saml:sp:State', $state) and array_key_exists('saml:AuthnInstant', $state['saml:sp:State'])) {
+        if (
+            array_key_exists('saml:sp:State', $state)
+            && array_key_exists('saml:AuthnInstant', $state['saml:sp:State'])
+        ) {
             $fticks['TS'] = $state['saml:sp:State']['saml:AuthnInstant'];
         } else {
             $fticks['TS'] = time();
@@ -357,7 +385,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
 
         /* assemble an F-ticks log string */
         $this->log(
-            'F-TICKS/'.$this->federation.'/'.self::$fticksVersion.'#' .
+            'F-TICKS/' . $this->federation . '/' . self::$fticksVersion . '#' .
             implode('#', array_map(
                 /**
                  * @param  string $k
@@ -365,12 +393,11 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
                  * @return string
                  */
                 function ($k, $v) {
-                    return $k.'='.$this->escapeFticks($v);
+                    return $k . '=' . $this->escapeFticks($v);
                 },
                 array_keys($fticks),
                 $fticks
-            )) .
-            '#'
+            )) . '#'
         );
     }
 }
