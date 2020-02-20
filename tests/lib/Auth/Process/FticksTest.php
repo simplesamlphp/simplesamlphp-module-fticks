@@ -45,7 +45,7 @@ class FticksTest extends TestCase
      * @param  array $request The request state.
      * @return array  The state array after processing.
      */
-    private static function processFilter(array $config, array $request)
+    private static function processFilter(array $config, array $request): array
     {
         $filter = new Fticks($config, null);
         $filter->process($request);
@@ -70,7 +70,7 @@ class FticksTest extends TestCase
     /**
      * @return void
      */
-    public function testMinimal()
+    public function testMinimal(): void
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout'];
         $request = self::$minRequest;
@@ -85,7 +85,7 @@ class FticksTest extends TestCase
     /**
      * @return void
      */
-    public function testAsServiceProvider()
+    public function testAsServiceProvider(): void
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout',];
         $request = array_merge(self::$minRequest, self::$spRequest);
@@ -101,7 +101,7 @@ class FticksTest extends TestCase
     /**
      * @return void
      */
-    public function testSPwithUserId()
+    public function testSPwithUserId(): void
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'userId' => 'eduPersonPrincipalName'];
         $request = array_merge(self::$minRequest, self::$spRequest, [
@@ -125,7 +125,7 @@ class FticksTest extends TestCase
     /**
      * @return void
      */
-    public function testAsIdentityProvider()
+    public function testAsIdentityProvider(): void
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout',];
         $request = array_merge(self::$minRequest, self::$idpRequest);
@@ -145,7 +145,7 @@ class FticksTest extends TestCase
     /**
      * @return void
      */
-    public function testExample()
+    public function testExample(): void
     {
         $config = [
             'federation' => 'ACME',
@@ -177,7 +177,7 @@ class FticksTest extends TestCase
     /**
      * @return void
      */
-    public function testFilteringArray()
+    public function testFilteringArray(): void
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => ['PN', 'AM']];
         $request = array_merge(self::$minRequest, self::$idpRequest);
@@ -192,7 +192,7 @@ class FticksTest extends TestCase
     /**
      * @return void
      */
-    public function testFilteringString()
+    public function testFilteringString(): void
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => 'AM'];
         $request = array_merge(self::$minRequest, self::$idpRequest);

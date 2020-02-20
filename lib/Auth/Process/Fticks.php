@@ -8,6 +8,7 @@ use SimpleSAML\Error\Exception;
 use SimpleSAML\Logger;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
+use Webmozart\Assert\Assert;
 
 /**
  * Filter to log F-ticks stats data
@@ -55,22 +56,24 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * @param  string $msg message to log
      * @return void
      */
-    private function log($msg)
+    private function log(string $msg): void
     {
         switch ($this->logdest) {
             /* local syslog call, avoiding SimpleSAMLphp's wrapping */
             case 'local':
             case 'syslog':
-                assert(array_key_exists("processname", $this->logconfig));
-                assert(array_key_exists("facility", $this->logconfig));
+                Assert::keyExists($this->logconfig, 'processname');
+                Assert::keyExists($this->logconfig, 'facility');
+
                 openlog($this->logconfig['processname'], LOG_PID, $this->logconfig['facility']);
                 syslog(array_key_exists('priority', $this->logconfig) ? $this->logconfig['priority'] : LOG_INFO, $msg);
                 break;
 
             /* remote syslog call via UDP */
             case 'remote':
-                assert(array_key_exists("processname", $this->logconfig));
-                assert(array_key_exists("facility", $this->logconfig));
+                Assert::keyExists($this->logconfig, 'processname');
+                Assert::keyExists($this->logconfig, 'facility');
+
                 /* assemble a syslog message per RFC 5424 */
                 $rfc5424_message = sprintf(
                     '<%d>',
@@ -122,11 +125,12 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * @return string|false $hash
      * @throws \SimpleSAML\Error\Exception
      */
-    private function generatePNhash(&$state)
+    private function generatePNhash(array &$state)
     {
         /* get a user id */
         if ($this->userId !== false) {
-            assert(array_key_exists("Attributes", $state));
+            Assert::keyExists($state, 'Attributes');
+
             if (array_key_exists($this->userId, $state['Attributes'])) {
                 if (is_array($state['Attributes'][$this->userId])) {
                     $uid = $state['Attributes'][$this->userId][0];
@@ -165,7 +169,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * @param  string $value
      * @return string $value
      */
-    private function escapeFticks($value)
+    private function escapeFticks(string $value): string
     {
         return preg_replace('/[^A-Za-z0-9_\-:.,;\/]+/', '', $value);
     }
@@ -178,9 +182,8 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * @param  mixed $reserved For future use.
      * @throws \SimpleSAML\Error\Exception
      */
-    public function __construct($config, $reserved)
+    public function __construct(array $config, $reserved)
     {
-        assert(is_array($config));
         parent::__construct($config, $reserved);
 
         if (array_key_exists('federation', $config)) {
@@ -299,13 +302,12 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * @param  mixed &$state
      * @return void
      */
-    public function process(&$state)
+    public function process(array &$state): void
     {
-        assert(is_array($state));
-        assert(array_key_exists("Destination", $state));
-        assert(array_key_exists("entityid", $state["Destination"]));
-        assert(array_key_exists("Source", $state));
-        assert(array_key_exists("entityid", $state["Source"]));
+        Assert::keyExists($state, 'Destination');
+        Assert::keyExists($state['Destination'], 'entityid');
+        Assert::keyExists($state, 'Source');
+        Assert::keyExists($state['Source'], 'entityid');
 
         $fticks = [];
 
@@ -358,7 +360,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
 
         /* realm */
         if ($this->realm !== false) {
-            assert(array_key_exists("Attributes", $state));
+            Assert::keyExists($state, 'Attributes');
             if (array_key_exists($this->realm, $state['Attributes'])) {
                 if (is_array($state['Attributes'][$this->realm])) {
                     $fticks['REALM'] = $state['Attributes'][$this->realm][0];
