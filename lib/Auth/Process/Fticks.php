@@ -16,7 +16,6 @@ use Webmozart\Assert\Assert;
  * - https://wiki.geant.org/display/gn42jra3/F-ticks+standard
  * - https://tools.ietf.org/html/draft-johansson-fticks-00
  *
- * @author    Guy Halse, http://orcid.org/0000-0002-9388-8592
  * @copyright Copyright (c) 2019, South African Identity Federation
  * @package   SimpleSAMLphp
  */
