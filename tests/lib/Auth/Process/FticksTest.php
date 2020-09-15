@@ -53,7 +53,6 @@ class FticksTest extends TestCase
     }
 
     /**
-     * @return void
      */
     protected function setUp(): void
     {
@@ -68,7 +67,6 @@ class FticksTest extends TestCase
     }
 
     /**
-     * @return void
      */
     public function testMinimal(): void
     {
@@ -83,7 +81,6 @@ class FticksTest extends TestCase
     }
 
     /**
-     * @return void
      */
     public function testAsServiceProvider(): void
     {
@@ -99,7 +96,6 @@ class FticksTest extends TestCase
     }
 
     /**
-     * @return void
      */
     public function testSPwithUserId(): void
     {
@@ -123,7 +119,6 @@ class FticksTest extends TestCase
     }
 
     /**
-     * @return void
      */
     public function testAsIdentityProvider(): void
     {
@@ -143,7 +138,6 @@ class FticksTest extends TestCase
     }
 
     /**
-     * @return void
      */
     public function testExample(): void
     {
@@ -175,7 +169,6 @@ class FticksTest extends TestCase
     }
 
     /**
-     * @return void
      */
     public function testFilteringArray(): void
     {
@@ -190,7 +183,6 @@ class FticksTest extends TestCase
     }
 
     /**
-     * @return void
      */
     public function testFilteringString(): void
     {

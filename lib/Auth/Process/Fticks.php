@@ -53,7 +53,6 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * Log a message to the desired destination
      *
      * @param  string $msg message to log
-     * @return void
      */
     private function log(string $msg): void
     {
@@ -299,7 +298,6 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
      * Process this filter
      *
      * @param  mixed &$state
-     * @return void
      */
     public function process(array &$state): void
     {
