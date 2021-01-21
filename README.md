@@ -2,6 +2,7 @@ fticks:Fticks
 =============
 ![Build Status](https://github.com/simplesamlphp/simplesamlphp-module-fticks/workflows/CI/badge.svg?branch=master)
 [![Coverage Status](https://codecov.io/gh/simplesamlphp/simplesamlphp-module-fticks/branch/master/graph/badge.svg)](https://codecov.io/gh/simplesamlphp/simplesamlphp-module-fticks)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/simplesamlphp/simplesamlphp-module-fticks/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/simplesamlphp/simplesamlphp-module-fticks/?branch=master)
 
 Log statistics in the [F-ticks federation log format](https://wiki.geant.org/display/gn42jra3/F-ticks+standard).
 
