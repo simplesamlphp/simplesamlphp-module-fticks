@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\fticks\Auth\Process;
 
 use SAML2\Constants;
+use SimpleSAML\Assert\Assert;
+use SimpleSAML\Auth;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error\Exception;
 use SimpleSAML\Logger;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
-use Webmozart\Assert\Assert;
 
 /**
  * Filter to log F-ticks stats data
@@ -19,22 +22,22 @@ use Webmozart\Assert\Assert;
  * @copyright Copyright (c) 2019, South African Identity Federation
  * @package   SimpleSAMLphp
  */
-class Fticks extends \SimpleSAML\Auth\ProcessingFilter
+class Fticks extends Auth\ProcessingFilter
 {
     /** @var string F-ticks version number */
-    private static $fticksVersion = '1.0';
+    private static string $fticksVersion = '1.0';
 
     /** @var string F-ticks federation identifier */
-    private $federation;
+    private string $federation;
 
     /** @var string A salt to apply when digesting usernames (defaults to config file salt) */
-    private $salt;
+    private string $salt;
 
     /** @var string The logging backend */
-    private $logdest = 'simplesamlphp';
+    private string $logdest = 'simplesamlphp';
 
     /** @var array Backend specific logging config */
-    private $logconfig = [];
+    private array $logconfig = [];
 
     /** @var string|false The username attribute to use */
     private $userId = false;
@@ -43,7 +46,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
     private $realm = false;
 
     /** @var string The hashing algorithm to use */
-    private $algorithm = 'sha256';
+    private string $algorithm = 'sha256';
 
     /** @var array|false F-ticks attributes to exclude */
     private $exclude = false;
@@ -392,7 +395,7 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
                  * @return string
                  */
                 function ($k, $v) {
-                    return $k . '=' . $this->escapeFticks($v);
+                    return $k . '=' . $this->escapeFticks(strval($v));
                 },
                 array_keys($fticks),
                 $fticks
