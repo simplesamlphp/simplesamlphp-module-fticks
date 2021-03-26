@@ -204,7 +204,8 @@ class Fticks extends Auth\ProcessingFilter
                 throw new \Exception('Salt must be a string');
             }
         } else {
-            $this->salt = Utils\Config::getSecretSalt();
+            $configUtils = new Utils\Config();
+            $this->salt = $configUtils->getSecretSalt();
         }
 
         if (array_key_exists('userId', $config)) {
