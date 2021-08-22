@@ -9,6 +9,9 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Logger\StandardErrorLoggingHandler;
 
+use function array_merge;
+use function preg_quote;
+
 class FticksTest extends TestCase
 {
     /** @var array minimal request */

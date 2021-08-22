@@ -8,10 +8,35 @@ use SAML2\Constants;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Auth;
 use SimpleSAML\Configuration;
-use SimpleSAML\Error\Exception;
+use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
+
+use function array_filter;
+use function array_keys;
+use function array_key_exists;
+use function array_map;
+use function constant;
+use function defined;
+use function gethostbyname;
+use function gethostname;
+use function gmdate;
+use function hash;
+use function hash_algos;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_string;
+use function openlog;
+use function posix_getpid;
+use function preg_match;
+use function preg_replace;
+use function socket_create;
+use function socket_sendto;
+use function sprintf;
+use function strlen;
+use function syslog;
 
 /**
  * Filter to log F-ticks stats data
@@ -124,7 +149,6 @@ class Fticks extends Auth\ProcessingFilter
      *
      * @param  array $state
      * @return string|false $hash
-     * @throws \SimpleSAML\Error\Exception
      */
     private function generatePNhash(array &$state)
     {
@@ -216,7 +240,7 @@ class Fticks extends Auth\ProcessingFilter
             ) {
                 $this->algorithm = $config['algorithm'];
             } else {
-                throw new \Exception('algorithm must be a hash algorithm listed in hash_algos()');
+                throw new Error\Exception('algorithm must be a hash algorithm listed in hash_algos()');
             }
         }
 
@@ -226,7 +250,7 @@ class Fticks extends Auth\ProcessingFilter
             } elseif (is_string($config['exclude'])) {
                 $this->exclude = [$config['exclude']];
             } else {
-                throw new \Exception('F-ticks exclude must be an array');
+                throw new Error\Exception('F-ticks exclude must be an array');
             }
         }
 
@@ -237,7 +261,7 @@ class Fticks extends Auth\ProcessingFilter
             ) {
                 $this->logdest = $config['logdest'];
             } else {
-                throw new \Exception(
+                throw new Error\Exception(
                     'F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]'
                 );
             }
@@ -254,7 +278,7 @@ class Fticks extends Auth\ProcessingFilter
             if (is_array($config['logconfig'])) {
                 $this->logconfig = $config['logconfig'];
             } else {
-                throw new \Exception('F-ticks logconfig must be an array');
+                throw new Error\Exception('F-ticks logconfig must be an array');
             }
         } else {
             $this->logconfig['facility'] = $defaultFacility;
