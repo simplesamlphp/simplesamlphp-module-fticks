@@ -187,41 +187,26 @@ class Fticks extends Auth\ProcessingFilter
     {
         parent::__construct($config, $reserved);
 
-        if (array_key_exists('federation', $config)) {
-            if (is_string($config['federation'])) {
-                $this->federation = $config['federation'];
-            } else {
-                throw new \Exception('Federation identifier must be a string');
-            }
-        } else {
-            throw new \Exception('Federation identifier must be set');
-        }
+        Assert::keyExists($config, 'federation', 'Federation identifier must be set', Error\Exception::class);
+        Assert::string($config['federation'], 'Federation identifier must be a string', Error\Exception::class);
+        $this->federation = $config['federation'];
 
         if (array_key_exists('salt', $config)) {
-            if (is_string($config['salt'])) {
-                $this->salt = $config['salt'];
-            } else {
-                throw new \Exception('Salt must be a string');
-            }
+            Assert::string($config['salt'], 'Salt must be a string', Error\Exception::class);
+            $this->salt = $config['salt'];
         } else {
             $configUtils = new Utils\Config();
             $this->salt = $configUtils->getSecretSalt();
         }
 
         if (array_key_exists('userId', $config)) {
-            if (is_string($config['userId'])) {
-                $this->userId = $config['userId'];
-            } else {
-                throw new \Exception('UserId must be a string');
-            }
+            Assert::string($config['userId'], 'UserId must be a string', Error\Exception::class);
+            $this->userId = $config['userId'];
         }
 
         if (array_key_exists('realm', $config)) {
-            if (is_string($config['realm'])) {
-                $this->realm = $config['realm'];
-            } else {
-                throw new \Exception('realm must be a string');
-            }
+            Assert::string($config['realm'], 'Realm must be a string', Error\Exception::class);
+            $this->realm = $config['realm'];
         }
 
         if (array_key_exists('algorithm', $config)) {
@@ -275,28 +260,43 @@ class Fticks extends Auth\ProcessingFilter
             $this->logconfig['facility'] = $defaultFacility;
             $this->logconfig['processname'] = $defaultProcessName;
         }
+
         /* warn if we risk mucking up the openlog call (doesn't matter for remote syslog) */
         if (in_array($this->logdest, ['local', 'syslog'])) {
-            if (
-                array_key_exists('facility', $this->logconfig)
-                && ($this->logconfig['facility'] !== $defaultFacility)
-            ) {
-                Logger::warning(
-                    'F-ticks syslog facility differs from global config which may cause'
-                    . ' SimpleSAMLphp\'s logging to behave inconsistently'
-                );
-            }
-            if (
-                array_key_exists('processname', $this->logconfig)
-                && ($this->logconfig['processname'] !== $defaultProcessName)
-            ) {
-                Logger::warning(
-                    'F-ticks syslog processname differs from global config which may cause'
-                    . ' SimpleSAMLphp\'s logging to behave inconsistently'
-                );
-            }
+            $this->warnRiskyLogSettings($defaultFacility, $defaultProcessName);
         }
     }
+
+
+    /**
+     * Warn about risky logger settings
+     *
+     * @param string $defaultFacility
+     * @param string $defaultProcessName
+     * @return void
+     */
+    private function warnRiskyLogSettings(string $defaultFacility, string $defaultProcessName): void
+    {
+        if (
+            array_key_exists('facility', $this->logconfig)
+            && ($this->logconfig['facility'] !== $defaultFacility)
+        ) {
+            Logger::warning(
+                'F-ticks syslog facility differs from global config which may cause'
+                . ' SimpleSAMLphp\'s logging to behave inconsistently'
+            );
+        }
+        if (
+            array_key_exists('processname', $this->logconfig)
+            && ($this->logconfig['processname'] !== $defaultProcessName)
+        ) {
+            Logger::warning(
+                'F-ticks syslog processname differs from global config which may cause'
+                . ' SimpleSAMLphp\'s logging to behave inconsistently'
+            );
+        }
+    }
+
 
     /**
      * Process this filter
@@ -373,23 +373,37 @@ class Fticks extends Auth\ProcessingFilter
 
         /* allow some attributes to be excluded */
         if ($this->exclude !== false) {
-            $fticks = array_filter(
-                $fticks,
-                /**
-                 * @param  string $k
-                 * @return bool
-                 */
-                function ($k) {
-                    return !in_array($k, $this->exclude);
-                },
-                ARRAY_FILTER_USE_KEY
-            );
+            $fticks = array_filter($fticks, [$this, 'filterExcludedAttributes'], ARRAY_FILTER_USE_KEY);
         }
 
         /* assemble an F-ticks log string */
-        $this->log(
-            'F-TICKS/' . $this->federation . '/' . self::$fticksVersion . '#' .
-            implode('#', array_map(
+        $this->log($this->assembleFticksLogString($fticks));
+    }
+
+
+    /**
+     * Callback method to filter excluded attributes
+     *
+     * @param string $attr
+     * @return bool
+     */
+    private function filterExcludedAttributes(string $attr): bool
+    {
+        return !in_array($attr, $this->exclude);
+    }
+
+
+    /**
+     * Assemble fticks log string
+     *
+     * @param array $fticks
+     * @return string
+     */
+    private function assembleFticksLogString(array $fticks): string
+    {
+        $attributes = implode(
+            '#',
+            array_map(
                 /**
                  * @param  string $k
                  * @param  string $v
@@ -400,7 +414,9 @@ class Fticks extends Auth\ProcessingFilter
                 },
                 array_keys($fticks),
                 $fticks
-            )) . '#'
+            )
         );
+
+        return sprintf('F-TICKS/%s/%s#%s#', $this->federation, self::$fticksVersion, $attributes);
     }
 }
