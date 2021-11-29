@@ -280,8 +280,11 @@ class Fticks extends Auth\ProcessingFilter
             } else {
                 throw new Error\Exception('F-ticks logconfig must be an array');
             }
-        } else {
+        }
+        if (!array_key_exists('facility', $this->logconfig)) {
             $this->logconfig['facility'] = $defaultFacility;
+        }
+        if (!array_key_exists('processname', $this->logconfig)) {
             $this->logconfig['processname'] = $defaultProcessName;
         }
 
