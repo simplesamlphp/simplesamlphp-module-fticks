@@ -266,8 +266,11 @@ class Fticks extends \SimpleSAML\Auth\ProcessingFilter
             } else {
                 throw new \Exception('F-ticks logconfig must be an array');
             }
-        } else {
+        }
+        if (!array_key_exists('facility', $this->logconfig)) {
             $this->logconfig['facility'] = $defaultFacility;
+        }
+        if (!array_key_exists('processname', $this->logconfig)) {
             $this->logconfig['processname'] = $defaultProcessName;
         }
         /* warn if we risk mucking up the openlog call (doesn't matter for remote syslog) */
