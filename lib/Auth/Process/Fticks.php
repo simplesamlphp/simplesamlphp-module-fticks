@@ -269,11 +269,11 @@ class Fticks extends Auth\ProcessingFilter
 
         /* match SSP config or we risk mucking up the openlog call */
         $globalConfig = Configuration::getInstance();
-        $defaultFacility = $globalConfig->getInteger(
+        $defaultFacility = $globalConfig->getOptionalInteger(
             'logging.facility',
             defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER
         );
-        $defaultProcessName = $globalConfig->getString('logging.processname', 'SimpleSAMLphp');
+        $defaultProcessName = $globalConfig->getOptionalString('logging.processname', 'SimpleSAMLphp');
         if (array_key_exists('logconfig', $config)) {
             if (is_array($config['logconfig'])) {
                 $this->logconfig = $config['logconfig'];
