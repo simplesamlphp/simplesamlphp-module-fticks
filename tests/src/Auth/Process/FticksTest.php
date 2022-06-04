@@ -38,8 +38,8 @@ class FticksTest extends TestCase
     private static $idpRequest = [
         'SimpleSAML_Auth_State.id' => 'SimpleSAML_Auth_State.id',
         'SimpleSAML_Auth_State.stage' => 'sspmod_core_Auth_UserPassBase.state',
-        'UserID' => 'user1@example.org',
     ];
+
 
     /**
      * Helper function to run the filter with a given configuration.
@@ -55,6 +55,7 @@ class FticksTest extends TestCase
         return $request;
     }
 
+
     /**
      */
     protected function setUp(): void
@@ -62,12 +63,8 @@ class FticksTest extends TestCase
         Configuration::loadFromArray([
             'secretsalt' => 'secretsalt',
         ], '[ARRAY]', 'simplesaml');
-        /*
-        $rm = new ReflectionMethod(Logger::class, 'createLoggingHandler');
-        $rm->setAccessible(true);
-        $rm->invoke(StandardErrorLoggingHandler::class);
-        */
     }
+
 
     /**
      */
@@ -83,6 +80,7 @@ class FticksTest extends TestCase
         $result = self::processFilter($config, $request);
     }
 
+
     /**
      */
     public function testAsServiceProvider(): void
@@ -97,6 +95,7 @@ class FticksTest extends TestCase
         $this->expectOutputRegex('/^' . $pattern1 . '[^#]+' . $pattern2 . '$/');
         $result = self::processFilter($config, $request);
     }
+
 
     /**
      */
@@ -121,12 +120,13 @@ class FticksTest extends TestCase
         $result = self::processFilter($config, $request);
     }
 
+
     /**
      */
     public function testAsIdentityProvider(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout',];
-        $request = array_merge(self::$minRequest, self::$idpRequest);
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'userId' => 'uid'];
+        $request = array_merge(self::$minRequest, self::$idpRequest, ['Attributes' => ['uid' => 'user1@example.org']]);
         $pattern1 = preg_quote(
             'F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL',
             '/'
@@ -139,6 +139,7 @@ class FticksTest extends TestCase
         $this->expectOutputRegex('/^' . $pattern1 . '[^#]+' . $pattern2 . '\d+#$/');
         $result = self::processFilter($config, $request);
     }
+
 
     /**
      */
@@ -171,12 +172,13 @@ class FticksTest extends TestCase
         $result = self::processFilter($config, $request);
     }
 
+
     /**
      */
     public function testFilteringArray(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => ['PN', 'AM']];
-        $request = array_merge(self::$minRequest, self::$idpRequest);
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => ['PN', 'AM'], 'userId' => 'uid'];
+        $request = array_merge(self::$minRequest, self::$idpRequest, ['Attributes' => ['uid' => 'user1@example.org']]);
         $pattern1 = preg_quote(
             'F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL',
             '/'
@@ -185,12 +187,13 @@ class FticksTest extends TestCase
         $result = self::processFilter($config, $request);
     }
 
+
     /**
      */
     public function testFilteringString(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => 'AM'];
-        $request = array_merge(self::$minRequest, self::$idpRequest);
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => 'AM', 'userId' => 'uid'];
+        $request = array_merge(self::$minRequest, self::$idpRequest, ['Attributes' => ['uid' => 'user1@example.org']]);
         $pattern1 = preg_quote(
             'F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL',
             '/'

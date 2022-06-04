@@ -163,8 +163,6 @@ class Fticks extends Auth\ProcessingFilter
                     $uid = $state['Attributes'][$this->userId];
                 }
             }
-        } elseif (array_key_exists('UserID', $state)) {
-            $uid = $state['UserID'];
         }
 
         /* calculate a hash */
