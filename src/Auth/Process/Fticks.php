@@ -65,7 +65,7 @@ class Fticks extends Auth\ProcessingFilter
     private array $logconfig = [];
 
     /** @var string|false The username attribute to use */
-    private $userId = false;
+    private $identifyingAttribute = false;
 
     /** @var string|false The realm attribute to use */
     private $realm = false;
@@ -153,14 +153,14 @@ class Fticks extends Auth\ProcessingFilter
     private function generatePNhash(array &$state)
     {
         /* get a user id */
-        if ($this->userId !== false) {
+        if ($this->identifyingAttribute !== false) {
             Assert::keyExists($state, 'Attributes');
 
-            if (array_key_exists($this->userId, $state['Attributes'])) {
-                if (is_array($state['Attributes'][$this->userId])) {
-                    $uid = $state['Attributes'][$this->userId][0];
+            if (array_key_exists($this->identifyingAttribute, $state['Attributes'])) {
+                if (is_array($state['Attributes'][$this->identifyingAttribute])) {
+                    $uid = $state['Attributes'][$this->identifyingAttribute][0];
                 } else {
-                    $uid = $state['Attributes'][$this->userId];
+                    $uid = $state['Attributes'][$this->identifyingAttribute];
                 }
             }
         }
@@ -221,9 +221,9 @@ class Fticks extends Auth\ProcessingFilter
             $this->salt = $configUtils->getSecretSalt();
         }
 
-        if (array_key_exists('userId', $config)) {
-            Assert::string($config['userId'], 'UserId must be a string', Error\Exception::class);
-            $this->userId = $config['userId'];
+        if (array_key_exists('identifyingAttribute', $config)) {
+            Assert::string($config['identifyingAttribute'], 'identifyingAttribute must be a string', Error\Exception::class);
+            $this->identifyingAttribute = $config['identifyingAttribute'];
         }
 
         if (array_key_exists('realm', $config)) {

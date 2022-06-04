@@ -99,9 +99,9 @@ class FticksTest extends TestCase
 
     /**
      */
-    public function testSPwithUserId(): void
+    public function testSPwithIdentifyingAttribute(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'userId' => 'eduPersonPrincipalName'];
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'identifyingAttribute' => 'eduPersonPrincipalName'];
         $request = array_merge(self::$minRequest, self::$spRequest, [
             'Attributes' => [
                 'eduPersonPrincipalName' => 'user2@example.net',
@@ -125,7 +125,7 @@ class FticksTest extends TestCase
      */
     public function testAsIdentityProvider(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'userId' => 'uid'];
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'identifyingAttribute' => 'uid'];
         $request = array_merge(self::$minRequest, self::$idpRequest, ['Attributes' => ['uid' => 'user1@example.org']]);
         $pattern1 = preg_quote(
             'F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL',
@@ -148,7 +148,7 @@ class FticksTest extends TestCase
         $config = [
             'federation' => 'ACME',
             'salt' => 'someVerySecretStringDifferentFromTheDefault',
-            'userId' => 'eduPersonPrincipalName',
+            'identifyingAttribute' => 'eduPersonPrincipalName',
             'realm' => 'schacHomeOrganization',
             'algorithm' => 'sha512',
             'exclude' => ['PN'],
@@ -177,7 +177,7 @@ class FticksTest extends TestCase
      */
     public function testFilteringArray(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => ['PN', 'AM'], 'userId' => 'uid'];
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => ['PN', 'AM'], 'identifyingAttribute' => 'uid'];
         $request = array_merge(self::$minRequest, self::$idpRequest, ['Attributes' => ['uid' => 'user1@example.org']]);
         $pattern1 = preg_quote(
             'F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL',
@@ -192,7 +192,7 @@ class FticksTest extends TestCase
      */
     public function testFilteringString(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => 'AM', 'userId' => 'uid'];
+        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => 'AM', 'identifyingAttribute' => 'uid'];
         $request = array_merge(self::$minRequest, self::$idpRequest, ['Attributes' => ['uid' => 'user1@example.org']]);
         $pattern1 = preg_quote(
             'F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL',
