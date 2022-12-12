@@ -64,8 +64,8 @@ class Fticks extends Auth\ProcessingFilter
     /** @var array Backend specific logging config */
     private array $logconfig = [];
 
-    /** @var string|false The username attribute to use */
-    private $identifyingAttribute = false;
+    /** @var string The username attribute to use */
+    private string $identifyingAttribute = 'eduPersonPrincipalName';
 
     /** @var string|false The realm attribute to use */
     private $realm = false;
