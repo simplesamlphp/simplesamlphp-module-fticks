@@ -65,7 +65,7 @@ class Fticks extends Auth\ProcessingFilter
     private array $logconfig = [];
 
     /** @var string|false The username attribute to use */
-    private $identifyingAttribute;
+    private $userId = false;
 
     /** @var string|false The realm attribute to use */
     private $realm = false;
@@ -147,23 +147,41 @@ class Fticks extends Auth\ProcessingFilter
     /**
      * Generate a PN hash
      *
-     * @return string $hash
+     * @param  array $state
+     * @return string|false $hash
      */
-    private function generatePNhash(array &$state): string
+    private function generatePNhash(array &$state)
     {
-        $userdata = $this->federation;
-        if (array_key_exists('saml:sp:IdP', $state)) {
-            $userdata .= strlen($state['saml:sp:IdP']) . ':' . $state['saml:sp:IdP'];
-        } else {
-            $userdata .= strlen($state['Source']['entityid']) . ':' . $state['Source']['entityid'];
+        /* get a user id */
+        if ($this->userId !== false) {
+            Assert::keyExists($state, 'Attributes');
+
+            if (array_key_exists($this->userId, $state['Attributes'])) {
+                if (is_array($state['Attributes'][$this->userId])) {
+                    $uid = $state['Attributes'][$this->userId][0];
+                } else {
+                    $uid = $state['Attributes'][$this->userId];
+                }
+            }
+        } elseif (array_key_exists('UserID', $state)) {
+            $uid = $state['UserID'];
         }
-        $userdata .= strlen($state['Destination']['entityid']) . ':' . $state['Destination']['entityid'];
 
-        $uid = $state['Attributes'][$this->identifyingAttribute][0];
-        $userdata .= strlen($uid) . ':' . $uid;
-        $userdata .= $this->salt;
+        /* calculate a hash */
+        if (isset($uid) && is_string($uid)) {
+            $userdata = $this->federation;
+            if (array_key_exists('saml:sp:IdP', $state)) {
+                $userdata .= strlen($state['saml:sp:IdP']) . ':' . $state['saml:sp:IdP'];
+            } else {
+                $userdata .= strlen($state['Source']['entityid']) . ':' . $state['Source']['entityid'];
+            }
+            $userdata .= strlen($state['Destination']['entityid']) . ':' . $state['Destination']['entityid'];
+            $userdata .= strlen($uid) . ':' . $uid;
+            $userdata .= $this->salt;
 
-        return hash($this->algorithm, $userdata);
+            return hash($this->algorithm, $userdata);
+        }
+        return false;
     }
 
 
@@ -205,12 +223,10 @@ class Fticks extends Auth\ProcessingFilter
             $this->salt = $configUtils->getSecretSalt();
         }
 
-        Assert::keyExists($config, 'identifyingAttribute', "Missing mandatory 'identifyingAttribute' config setting.");
-        Assert::stringNotEmpty(
-            $config['identifyingAttribute'],
-            "fticks:: 'identifyingAttribute' must be a non-empty string."
-        );
-        $this->identifyingAttribute = $config['identifyingAttribute'];
+        if (array_key_exists('userId', $config)) {
+            Assert::string($config['userId'], 'UserId must be a string', Error\Exception::class);
+            $this->userId = $config['userId'];
+        }
 
         if (array_key_exists('realm', $config)) {
             Assert::string($config['realm'], 'Realm must be a string', Error\Exception::class);
@@ -354,14 +370,7 @@ class Fticks extends Auth\ProcessingFilter
             $fticks['AM'] = Constants::AC_PASSWORD;
         }
 
-        Assert::keyExists($state, 'Attributes');
-        if (!array_key_exists($this->identifyingAttribute, $state['Attributes'])) {
-            throw new Error\Exception(sprintf(
-                "fticks: Missing mandatory attribute '%s'.",
-                $this->identifyingAttribute
-            ));
-        }
-
+        /* ePTID */
         $pn = $this->generatePNhash($state);
         if ($pn !== false) {
             $fticks['PN'] = $pn;
