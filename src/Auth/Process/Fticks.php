@@ -296,11 +296,11 @@ class Fticks extends Auth\ProcessingFilter
     /**
      * Warn about risky logger settings
      *
-     * @param string $defaultFacility
+     * @param int $defaultFacility
      * @param string $defaultProcessName
      * @return void
      */
-    private function warnRiskyLogSettings(string $defaultFacility, string $defaultProcessName): void
+    private function warnRiskyLogSettings(int $defaultFacility, string $defaultProcessName): void
     {
         if (
             array_key_exists('facility', $this->logconfig)

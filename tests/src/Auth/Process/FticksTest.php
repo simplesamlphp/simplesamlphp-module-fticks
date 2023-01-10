@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use SAML2\Constants;
 use SimpleSAML\Module\fticks\Auth\Process\Fticks;
 use SimpleSAML\Configuration;
+use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Logger\StandardErrorLoggingHandler;
 
@@ -205,5 +206,29 @@ class FticksTest extends TestCase
         );
         $this->expectOutputRegex('/^' . $pattern1 . '[^#]+' . $pattern2 . '\d+#$/');
         $result = self::processFilter($config, $request);
+    }
+
+    /**
+     */
+    public function testInvalidConfig(): void
+    {
+        $this->expectException(Error\Exception::class);
+        $result = self::processFilter([], self::$minRequest);
+        $result = self::processFilter(['federation' => 'ACME', 'logdest' => 'invalid'], self::$minRequest);
+    }
+
+    /**
+      * @backupStaticAttributes
+      */
+    public function testRiskyLogSettings(): void
+    {
+        Logger::setCaptureLog();
+        $result = self::processFilter(
+            ['federation' => 'ACME', 'logdest' => 'local', 'logconfig' => ['processname' => 'phpunit']],
+            self::$minRequest
+        );
+        $log = Logger::getCapturedLog();
+        $this->assertCount(1, $log);
+        $this->assertStringContainsString('syslog processname differs from global config', $log[0]);
     }
 }
