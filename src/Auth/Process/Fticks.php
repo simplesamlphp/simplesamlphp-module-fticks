@@ -67,14 +67,14 @@ class Fticks extends Auth\ProcessingFilter
     /** @var string The username attribute to use */
     private string $identifyingAttribute = 'eduPersonPrincipalName';
 
-    /** @var string|false The realm attribute to use */
-    private $realm = false;
+    /** @var string|null The realm attribute to use */
+    private ?string $realm = null;
 
     /** @var string The hashing algorithm to use */
     private string $algorithm = 'sha256';
 
-    /** @var array|false F-ticks attributes to exclude */
-    private $exclude = false;
+    /** @var array F-ticks attributes to exclude */
+    private array $exclude = [];
 
 
     /**
@@ -148,9 +148,9 @@ class Fticks extends Auth\ProcessingFilter
      * Generate a PN hash
      *
      * @param  array $state
-     * @return string|false $hash
+     * @return string|null $hash
      */
-    private function generatePNhash(array &$state)
+    private function generatePNhash(array &$state): ?string
     {
         /* get a user id */
         Assert::keyExists($state, 'Attributes');
@@ -179,7 +179,7 @@ class Fticks extends Auth\ProcessingFilter
             return hash($this->algorithm, $userdata);
         }
 
-        return false;
+        return null;
     }
 
 
@@ -370,7 +370,7 @@ class Fticks extends Auth\ProcessingFilter
 
         /* ePTID */
         $pn = $this->generatePNhash($state);
-        if ($pn !== false) {
+        if ($pn !== null) {
             $fticks['PN'] = $pn;
         }
 
@@ -385,7 +385,7 @@ class Fticks extends Auth\ProcessingFilter
         }
 
         /* realm */
-        if ($this->realm !== false) {
+        if ($this->realm !== null) {
             Assert::keyExists($state, 'Attributes');
             if (array_key_exists($this->realm, $state['Attributes'])) {
                 if (is_array($state['Attributes'][$this->realm])) {
@@ -397,7 +397,7 @@ class Fticks extends Auth\ProcessingFilter
         }
 
         /* allow some attributes to be excluded */
-        if ($this->exclude !== false) {
+        if (!empty($this->exclude)) {
             $fticks = array_filter($fticks, [$this, 'filterExcludedAttributes'], ARRAY_FILTER_USE_KEY);
         }
 
