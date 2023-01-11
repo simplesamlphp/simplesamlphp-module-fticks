@@ -80,6 +80,7 @@ class FticksTest extends TestCase
         );
         $this->expectOutputRegex('/^' . $pattern . '[^#]+#TS=\d+#$/');
         $result = self::processFilter($config, $request);
+        $this->assertEquals($request, $result);
     }
 
 
@@ -96,6 +97,7 @@ class FticksTest extends TestCase
         $pattern2 = preg_quote('#AM=urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified#TS=1000#', '/');
         $this->expectOutputRegex('/^' . $pattern1 . '[^#]+' . $pattern2 . '$/');
         $result = self::processFilter($config, $request);
+        $this->assertEquals($request, $result);
     }
 
 
@@ -106,7 +108,7 @@ class FticksTest extends TestCase
         $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'identifyingAttribute' => 'eduPersonPrincipalName'];
         $request = array_merge(self::$minRequest, self::$spRequest, [
             'Attributes' => [
-                'eduPersonPrincipalName' => 'user2@example.net',
+                'eduPersonPrincipalName' => [ 'user2@example.net' ],
             ],
         ]);
         $pattern1 = preg_quote(
@@ -120,6 +122,7 @@ class FticksTest extends TestCase
         );
         $this->expectOutputRegex('/^' . $pattern1 . '[^#]+' . $pattern2 . '$/');
         $result = self::processFilter($config, $request);
+        $this->assertEquals($request, $result);
     }
 
 
@@ -128,7 +131,11 @@ class FticksTest extends TestCase
     public function testAsIdentityProvider(): void
     {
         $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'identifyingAttribute' => 'uid'];
-        $request = array_merge(self::$minRequest, self::$idpRequest, ['Attributes' => ['uid' => 'user1@example.org']]);
+        $request = array_merge(self::$minRequest, self::$idpRequest, [
+            'Attributes' => [
+                'uid' => 'user1@example.org', /* deliberately not an array to test different code path */
+            ]
+        ]);
         $pattern1 = preg_quote(
             'F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL',
             '/'
@@ -140,6 +147,7 @@ class FticksTest extends TestCase
         );
         $this->expectOutputRegex('/^' . $pattern1 . '[^#]+' . $pattern2 . '\d+#$/');
         $result = self::processFilter($config, $request);
+        $this->assertEquals($request, $result);
     }
 
 
@@ -158,8 +166,8 @@ class FticksTest extends TestCase
         ];
         $request = array_merge(self::$minRequest, self::$idpRequest, [
             'Attributes' => [
-                'eduPersonPrincipalName' => 'user3@example.com',
-                'schacHomeOrganization' => 'example.com',
+                'eduPersonPrincipalName' => [ 'user3@example.com' ],
+                'schacHomeOrganization' => [ 'example.com' ],
             ],
         ]);
         $pattern1 = preg_quote(
@@ -172,6 +180,7 @@ class FticksTest extends TestCase
         );
         $this->expectOutputRegex('/^' . $pattern1 . '[^#]+' . $pattern2 . '\d+#REALM=example.com#$/');
         $result = self::processFilter($config, $request);
+        $this->assertEquals($request, $result);
     }
 
 
@@ -187,6 +196,7 @@ class FticksTest extends TestCase
         );
         $this->expectOutputRegex('/^' . $pattern1 . '[^#]+#TS=\d+#$/');
         $result = self::processFilter($config, $request);
+        $this->assertEquals($request, $result);
     }
 
 
@@ -206,6 +216,7 @@ class FticksTest extends TestCase
         );
         $this->expectOutputRegex('/^' . $pattern1 . '[^#]+' . $pattern2 . '\d+#$/');
         $result = self::processFilter($config, $request);
+        $this->assertEquals($request, $result);
     }
 
     /**

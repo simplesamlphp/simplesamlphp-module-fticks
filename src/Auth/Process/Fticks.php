@@ -37,6 +37,7 @@ use function socket_sendto;
 use function sprintf;
 use function strlen;
 use function syslog;
+use function reset;
 
 /**
  * Filter to log F-ticks stats data
@@ -158,7 +159,7 @@ class Fticks extends Auth\ProcessingFilter
         $uid = null;
         if (array_key_exists($this->identifyingAttribute, $state['Attributes'])) {
             if (is_array($state['Attributes'][$this->identifyingAttribute])) {
-                $uid = array_pop($state['Attributes'][$this->identifyingAttribute]);
+                $uid = reset($state['Attributes'][$this->identifyingAttribute]);
             } else {
                 $uid = $state['Attributes'][$this->identifyingAttribute];
             }
