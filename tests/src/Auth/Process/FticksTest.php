@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Test\Module\fticks\Auth\Process;
 
 use PHPUnit\Framework\TestCase;
@@ -188,7 +190,12 @@ class FticksTest extends TestCase
      */
     public function testFilteringArray(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'exclude' => ['PN', 'AM'], 'identifyingAttribute' => 'uid'];
+        $config = [
+            'federation' => 'ACME',
+            'logdest' => 'stdout',
+            'exclude' => ['PN', 'AM'],
+            'identifyingAttribute' => 'uid',
+        ];
         $request = array_merge(self::$minRequest, self::$idpRequest, ['Attributes' => ['uid' => 'user1@example.org']]);
         $pattern1 = preg_quote(
             'F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL',

@@ -223,7 +223,11 @@ class Fticks extends Auth\ProcessingFilter
         }
 
         if (array_key_exists('identifyingAttribute', $config)) {
-            Assert::string($config['identifyingAttribute'], 'identifyingAttribute must be a string', Error\Exception::class);
+            Assert::string(
+                $config['identifyingAttribute'],
+                'identifyingAttribute must be a string',
+                Error\Exception::class,
+            );
             $this->identifyingAttribute = $config['identifyingAttribute'];
         }
 
