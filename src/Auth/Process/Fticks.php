@@ -14,8 +14,8 @@ use SimpleSAML\Session;
 use SimpleSAML\Utils;
 
 use function array_filter;
-use function array_keys;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function constant;
 use function defined;
@@ -32,12 +32,12 @@ use function openlog;
 use function posix_getpid;
 use function preg_match;
 use function preg_replace;
+use function reset;
 use function socket_create;
 use function socket_sendto;
 use function sprintf;
 use function strlen;
 use function syslog;
-use function reset;
 
 /**
  * Filter to log F-ticks stats data

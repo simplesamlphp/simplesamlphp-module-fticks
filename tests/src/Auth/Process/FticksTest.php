@@ -6,11 +6,10 @@ namespace SimpleSAML\Test\Module\fticks\Auth\Process;
 
 use PHPUnit\Framework\TestCase;
 use SAML2\Constants;
-use SimpleSAML\Module\fticks\Auth\Process\Fticks;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
-use SimpleSAML\Logger\StandardErrorLoggingHandler;
+use SimpleSAML\Module\fticks\Auth\Process\Fticks;
 
 use function array_merge;
 use function preg_quote;
