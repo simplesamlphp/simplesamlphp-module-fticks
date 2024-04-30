@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Test\Module\fticks\Auth\Process;
 
+use PHPUnit\Framework\Attributes\BackupStaticProperties;
 use PHPUnit\Framework\TestCase;
 use SAML2\Constants;
 use SimpleSAML\Configuration;
@@ -235,8 +236,8 @@ class FticksTest extends TestCase
     }
 
     /**
-      * @backupStaticAttributes
       */
+    #[BackupStaticProperties(true)]
     public function testRiskyLogSettings(): void
     {
         Logger::setCaptureLog();
