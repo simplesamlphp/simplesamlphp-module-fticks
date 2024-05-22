@@ -136,7 +136,7 @@ class FticksTest extends TestCase
         $request = array_merge(self::$minRequest, self::$idpRequest, [
             'Attributes' => [
                 'uid' => 'user1@example.org', /* deliberately not an array to test different code path */
-            ]
+            ],
         ]);
         $pattern1 = preg_quote(
             'F-TICKS/ACME/1.0#RESULT=OK#AP=https://localhost/sp#RP=https://localhost/idp#CSI=CL',
