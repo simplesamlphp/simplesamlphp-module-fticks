@@ -105,7 +105,7 @@ class Fticks extends Auth\ProcessingFilter
                 $rfc5424_message = sprintf(
                     '<%d>',
                     ((($this->logconfig['facility'] & 0x03f8) >> 3) * 8) +
-                    (array_key_exists('priority', $this->logconfig) ? $this->logconfig['priority'] : LOG_INFO)
+                    (array_key_exists('priority', $this->logconfig) ? $this->logconfig['priority'] : LOG_INFO),
                 ); // pri
                 $rfc5424_message .= '1 '; // ver
                 $rfc5424_message .= gmdate('Y-m-d\TH:i:s.v\Z '); // timestamp
@@ -123,7 +123,7 @@ class Fticks extends Auth\ProcessingFilter
                     strlen($rfc5424_message),
                     0,
                     gethostbyname(array_key_exists('host', $this->logconfig) ? $this->logconfig['host'] : 'localhost'),
-                    array_key_exists('port', $this->logconfig) ? $this->logconfig['port'] : 514
+                    array_key_exists('port', $this->logconfig) ? $this->logconfig['port'] : 514,
                 );
                 break;
 
@@ -265,7 +265,7 @@ class Fticks extends Auth\ProcessingFilter
                 $this->logdest = $config['logdest'];
             } else {
                 throw new Error\Exception(
-                    'F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]'
+                    'F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]',
                 );
             }
         }
@@ -274,7 +274,7 @@ class Fticks extends Auth\ProcessingFilter
         $globalConfig = Configuration::getInstance();
         $defaultFacility = $globalConfig->getOptionalInteger(
             'logging.facility',
-            defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER
+            defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER,
         );
         $defaultProcessName = $globalConfig->getOptionalString('logging.processname', 'SimpleSAMLphp');
         if (array_key_exists('logconfig', $config)) {
@@ -313,7 +313,7 @@ class Fticks extends Auth\ProcessingFilter
         ) {
             Logger::warning(
                 'F-ticks syslog facility differs from global config which may cause'
-                . ' SimpleSAMLphp\'s logging to behave inconsistently'
+                . ' SimpleSAMLphp\'s logging to behave inconsistently',
             );
         }
         if (
@@ -322,7 +322,7 @@ class Fticks extends Auth\ProcessingFilter
         ) {
             Logger::warning(
                 'F-ticks syslog processname differs from global config which may cause'
-                . ' SimpleSAMLphp\'s logging to behave inconsistently'
+                . ' SimpleSAMLphp\'s logging to behave inconsistently',
             );
         }
     }
@@ -443,8 +443,8 @@ class Fticks extends Auth\ProcessingFilter
                     return $k . '=' . $this->escapeFticks(strval($v));
                 },
                 array_keys($fticks),
-                $fticks
-            )
+                $fticks,
+            ),
         );
 
         return sprintf('F-TICKS/%s/%s#%s#', $this->federation, self::$fticksVersion, $attributes);
