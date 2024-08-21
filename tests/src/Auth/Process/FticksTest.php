@@ -68,7 +68,6 @@ class FticksTest extends TestCase
         Configuration::loadFromArray([
             'secretsalt' => 'secretsalt',
         ], '[ARRAY]', 'simplesaml');
-
     }
 
 
@@ -161,7 +160,12 @@ class FticksTest extends TestCase
      */
     public function testSPwithUserIdLegacyBehaviour(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'identifyingAttribute' => 'eduPersonPrincipalName', 'pnHashIsTargeted' => 'both',];
+        $config = [
+            'federation' => 'ACME',
+            'logdest' => 'stdout',
+            'identifyingAttribute' => 'eduPersonPrincipalName',
+            'pnHashIsTargeted' => 'both',
+        ];
         $request = array_merge(self::$minRequest, self::$spRequest, [
             'Attributes' => [
                 'eduPersonPrincipalName' => [ 'user2@example.net' ],
@@ -186,7 +190,12 @@ class FticksTest extends TestCase
      */
     public function testSPwithUserIdSourceTargeted(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'identifyingAttribute' => 'eduPersonPrincipalName', 'pnHashIsTargeted' => 'source',];
+        $config = [
+            'federation' => 'ACME',
+            'logdest' => 'stdout',
+            'identifyingAttribute' => 'eduPersonPrincipalName',
+            'pnHashIsTargeted' => 'source',
+        ];
         $request = array_merge(self::$minRequest, self::$spRequest, [
             'Attributes' => [
                 'eduPersonPrincipalName' => [ 'user2@example.net' ],
@@ -211,7 +220,12 @@ class FticksTest extends TestCase
      */
     public function testSPwithUserIdSourceTargetedDifferentDest(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'identifyingAttribute' => 'eduPersonPrincipalName', 'pnHashIsTargeted' => 'source',];
+        $config = [
+            'federation' => 'ACME',
+            'logdest' => 'stdout',
+            'identifyingAttribute' => 'eduPersonPrincipalName',
+            'pnHashIsTargeted' => 'source',
+        ];
         $request = array_merge(self::$minRequest, self::$spRequest, [
             'Attributes' => [
                 'eduPersonPrincipalName' => [ 'user2@example.net' ],
@@ -237,7 +251,12 @@ class FticksTest extends TestCase
      */
     public function testSPwithUserIdDestinationTargeted(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'identifyingAttribute' => 'eduPersonPrincipalName', 'pnHashIsTargeted' => 'destination',];
+        $config = [
+            'federation' => 'ACME',
+            'logdest' => 'stdout',
+            'identifyingAttribute' => 'eduPersonPrincipalName',
+            'pnHashIsTargeted' => 'destination',
+        ];
         $request = array_merge(self::$minRequest, self::$spRequest, [
             'Attributes' => [
                 'eduPersonPrincipalName' => [ 'user2@example.net' ],
@@ -263,7 +282,12 @@ class FticksTest extends TestCase
      */
     public function testSPwithUserIdDestinationTargetedDifferentSource(): void
     {
-        $config = ['federation' => 'ACME', 'logdest' => 'stdout', 'identifyingAttribute' => 'eduPersonPrincipalName', 'pnHashIsTargeted' => 'destination',];
+        $config = [
+            'federation' => 'ACME',
+            'logdest' => 'stdout',
+            'identifyingAttribute' => 'eduPersonPrincipalName',
+            'pnHashIsTargeted' => 'destination',
+        ];
         $request = array_merge(self::$minRequest, self::$spRequest, [
             'Attributes' => [
                 'eduPersonPrincipalName' => [ 'user2@example.net' ],

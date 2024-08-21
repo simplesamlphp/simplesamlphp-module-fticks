@@ -17,7 +17,6 @@ use function array_filter;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
-use function boolval;
 use function constant;
 use function defined;
 use function gethostbyname;
@@ -78,7 +77,7 @@ class Fticks extends Auth\ProcessingFilter
     /** @var array F-ticks attributes to exclude */
     private array $exclude = [];
 
-    /** @var bool Enable legacy handing of PN (for backwards compatibility) */
+    /** @var string Enable legacy handing of PN (for backwards compatibility) */
     private string $pnHashIsTargeted = 'none';
 
 
