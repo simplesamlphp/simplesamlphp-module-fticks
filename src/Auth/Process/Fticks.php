@@ -265,29 +265,23 @@ class Fticks extends Auth\ProcessingFilter
         }
 
         if (array_key_exists('pnHashIsTargeted', $config)) {
-            if (
-                is_string($config['pnHashIsTargeted']) &&
-                in_array($config['pnHashIsTargeted'], ['source', 'destination', 'both', 'none'])
-            ) {
-                $this->pnHashIsTargeted = $config['pnHashIsTargeted'];
-            } else {
-                throw new Error\Exception(
-                    'F-ticks log pnHashIsTargeted must be one of [source, destnation, both, none]',
-                );
-            }
+            Assert::string($config['pnHashIsTargeted'], 'pnHashIsTargeted must be a string');
+            Assert::oneOf(
+                $config['pnHashIsTargeted'],
+                ['source', 'destination', 'both', 'none'],
+                'pnHashIsTargeted must be one of [source, destnation, both, none]',
+            );
+            $this->pnHashIsTargeted = $config['pnHashIsTargeted'];
         }
 
         if (array_key_exists('logdest', $config)) {
-            if (
-                is_string($config['logdest']) &&
-                in_array($config['logdest'], ['local', 'syslog', 'remote', 'stdout', 'errorlog', 'simplesamlphp'])
-            ) {
-                $this->logdest = $config['logdest'];
-            } else {
-                throw new Error\Exception(
-                    'F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]',
-                );
-            }
+            Assert::string($config['logdest'], 'F-ticks log destination must be a string');
+            Assert::oneOf(
+                $config['logdest'],
+                ['local', 'syslog', 'remote', 'stdout', 'errorlog', 'simplesamlphp'],
+                'F-ticks log destination must be one of [local, remote, stdout, errorlog, simplesamlphp]',
+            );
+            $this->logdest = $config['logdest'];
         }
 
         /* match SSP config or we risk mucking up the openlog call */
