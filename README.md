@@ -35,19 +35,19 @@ search for the `module.enable` key and set `fticks` to true:
     ],
 ```
 
-For configuration of the module, see [docs/authproc_fticks.md](docs/authproc_fticks.md).
+For configuration of the module, see [docs/authproc_fticks.md][1].
 
-[docs/authproc_fticks.md]: https://github.com/simplesamlphp/simplesamlphp-module-fticks/blob/master/docs/authproc_fticks.md
+[1]: https://github.com/simplesamlphp/simplesamlphp-module-fticks/blob/master/docs/authproc_fticks.md
 
 ### Acknowledgements
 
 Some work on making SimpleSAMLphp log in F-ticks format was done by NIIF, and
-is available at [NIIF](NIIF/simplesamlphp-module-ftickslogger).
+is available at [NIIF][2].
 This module may derive ideas from their work.
 
-[NIIF]: https://github.com/NIIF/simplesamlphp-module-ftickslogger
+[2]: https://github.com/NIIF/simplesamlphp-module-ftickslogger
 
-Likewise, some ideas came from the [Shibboleth](Shibboleth IdP's F-ticks implementation)
+Likewise, some ideas came from the [Shibboleth IdP's F-ticks implementation][3]
 and some of the config options should look familiar to Shibboleth users.
 
-[Shibboleth]: https://wiki.shibboleth.net/confluence/display/IDP30/FTICKSLoggingConfiguration
+[3]: https://wiki.shibboleth.net/confluence/display/IDP30/FTICKSLoggingConfiguration

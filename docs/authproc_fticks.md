@@ -1,8 +1,8 @@
 # `fticks:Fticks`
 
-Log statistics in the [F-ticks federation log format](F-ticks federation log format).
+Log statistics in the [F-ticks federation log format][1].
 
-[F-ticks federation log format]: https://wiki.geant.org/display/gn42jra3/F-ticks+standard
+[1]: https://wiki.geant.org/display/gn42jra3/F-ticks+standard
 
 The filter aims to produce as many F-ticks attributes as possible, irrespective
 of whether SimpleSAMLphp is acting as an identity provider or a
@@ -41,15 +41,15 @@ The filter supports the following configuration options:
 
 > * `simplesamlphp` - use SimpleSAMLphp's built-in logging mechanism
     (this is the default).
-> * `local` - log using the PHP [syslog](syslog) functions, potentially
+> * `local` - log using the PHP [syslog][2] functions, potentially
     avoiding some of the extra information SimpleSAMLphp includes in logs.
 > * `remote` - log to a remote RFC 5424 syslog server using UDP.
-> * `errorlog` - log using PHP's [error_log](error_log) function, probably
+> * `errorlog` - log using PHP's [error_log][3] function, probably
     into the web server logs.
 > * `stdout` - write to standard out, primarily for debugging.
 
-[syslog]: https://php.net/manual/en/function.syslog.php
-[error_log]: https://php.net/manual/en/function.error-log.php
+[2]: https://php.net/manual/en/function.syslog.php
+[3]: https://php.net/manual/en/function.error-log.php
 
 `logconfig`
 :   An array of configuration options for the logging method. The exact values
@@ -131,9 +131,9 @@ generated/derived:
 :   The authentication method is derived from the SP's SAML state. If
     that is not available, is set to
     `urn:oasis:names:tc:SAML:2.0:ac:classes:Password` when one of the
-    authentication sources based on the [UserPassBase](UserPassBase) class.
+    authentication sources based on the [UserPassBase][4] class.
 
-[UserPassBase]: https://github.com/simplesamlphp/simplesamlphp/blob/master/modules/core/lib/Auth/UserPassBase.php
+[4]: https://github.com/simplesamlphp/simplesamlphp/blob/master/modules/core/lib/Auth/UserPassBase.php
 
 `CSI`
 :   The calling station identifier is set to the SimpleSAMLphp tracking
@@ -141,9 +141,9 @@ generated/derived:
 
 `PN`
 :   The PN is generated in a similar way too, but completely independently from
-    a [saml:PersistentNameID](saml:PersistentNameID).
+    a [saml:PersistentNameID][5].
 
-[saml:PersistentNameID]: https://simplesamlphp.org/docs/stable/saml:nameid
+[5]: https://simplesamlphp.org/docs/stable/saml:nameid
 
 `RESULT`
 :   Result is always set to `OK`, since if the authentication fails,
