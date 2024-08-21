@@ -17,6 +17,7 @@ use function array_filter;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
+use function boolval;
 use function constant;
 use function defined;
 use function gethostbyname;
@@ -76,6 +77,9 @@ class Fticks extends Auth\ProcessingFilter
 
     /** @var array F-ticks attributes to exclude */
     private array $exclude = [];
+
+    /** @var bool Enable legacy handing of PN (for backwards compatibility) */
+    private string $pnHashIsTargeted = 'none';
 
 
     /**
@@ -168,12 +172,16 @@ class Fticks extends Auth\ProcessingFilter
         /* calculate a hash */
         if ($uid !== null) {
             $userdata = $this->federation;
-            if (array_key_exists('saml:sp:IdP', $state)) {
-                $userdata .= strlen($state['saml:sp:IdP']) . ':' . $state['saml:sp:IdP'];
-            } else {
-                $userdata .= strlen($state['Source']['entityid']) . ':' . $state['Source']['entityid'];
+            if (in_array($this->pnHashIsTargeted, ['source', 'both'])) {
+                if (array_key_exists('saml:sp:IdP', $state)) {
+                    $userdata .= strlen($state['saml:sp:IdP']) . ':' . $state['saml:sp:IdP'];
+                } else {
+                    $userdata .= strlen($state['Source']['entityid']) . ':' . $state['Source']['entityid'];
+                }
             }
-            $userdata .= strlen($state['Destination']['entityid']) . ':' . $state['Destination']['entityid'];
+            if (in_array($this->pnHashIsTargeted, ['destination', 'both'])) {
+                $userdata .= strlen($state['Destination']['entityid']) . ':' . $state['Destination']['entityid'];
+            }
             $userdata .= strlen($uid) . ':' . $uid;
             $userdata .= $this->salt;
 
@@ -254,6 +262,19 @@ class Fticks extends Auth\ProcessingFilter
                 $this->exclude = [$config['exclude']];
             } else {
                 throw new Error\Exception('F-ticks exclude must be an array');
+            }
+        }
+
+        if (array_key_exists('pnHashIsTargeted', $config)) {
+            if (
+                is_string($config['pnHashIsTargeted']) &&
+                in_array($config['pnHashIsTargeted'], ['source', 'destination', 'both', 'none'])
+            ) {
+                $this->pnHashIsTargeted = $config['pnHashIsTargeted'];
+            } else {
+                throw new Error\Exception(
+                    'F-ticks log pnHashIsTargeted must be one of [source, destnation, both, none]',
+                );
             }
         }
 

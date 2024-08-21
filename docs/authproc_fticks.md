@@ -33,6 +33,24 @@ The filter supports the following configuration options:
     [supported by PHP](http://php.net/manual/en/function.hash-algos.php)
     can be used.
 
+`pnHashIsTargeted`
+:   When generating the F-Ticks _PN_ attribute, include the source or
+    destination entityId to create a targeted version of the subject. Must
+    be one of the following options:
+
+> * `none` - _PN_ depends only on the `federation` and
+    `identifyingAttribute` (this is the default, and compatible with
+    other implementations).
+> * `source` - _PN_ is targeted based on the SAML source. This is useful
+    for [bridging configurations](bridging) where the `identifyingAttribute`
+    may not be unique.
+> * `destination` - _PN_ is targeted based on the SAML destination
+> * `both` - _PN_ is targeted based on both the SAML source and destination
+    (this option exists to preserve backwards-compatibility, and may
+    lead to overcounting of subjects).
+
+[bridging]: https://simplesamlphp.org/docs/stable/simplesamlphp-advancedfeatures.html#bridging-between-protocols
+
 `exclude`
 :   An array of F-ticks attributes to exclude/filter from the output.
 
@@ -141,7 +159,7 @@ generated/derived:
 
 `PN`
 :   The PN is generated in a similar way too, but completely independently from
-    a [saml:PersistentNameID][5].
+    a [saml:PersistentNameID][5]. Depends on the setting of `pnHashIsTargeted`.
 
 [5]: https://simplesamlphp.org/docs/stable/saml:nameid
 
