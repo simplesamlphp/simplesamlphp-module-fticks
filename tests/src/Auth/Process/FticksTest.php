@@ -15,7 +15,7 @@ use SimpleSAML\Module\fticks\Auth\Process\Fticks;
 use function array_merge;
 use function preg_quote;
 
-class FticksTest extends TestCase
+final class FticksTest extends TestCase
 {
     /** @var array minimal request */
     private static $minRequest = [
@@ -412,8 +412,8 @@ class FticksTest extends TestCase
     public function testInvalidConfig(): void
     {
         $this->expectException(Error\Exception::class);
-        $result = self::processFilter([], self::$minRequest);
-        $result = self::processFilter(['federation' => 'ACME', 'logdest' => 'invalid'], self::$minRequest);
+        self::processFilter([], self::$minRequest);
+        self::processFilter(['federation' => 'ACME', 'logdest' => 'invalid'], self::$minRequest);
     }
 
     /**
@@ -422,7 +422,7 @@ class FticksTest extends TestCase
     public function testRiskyLogSettings(): void
     {
         Logger::setCaptureLog();
-        $result = self::processFilter(
+        self::processFilter(
             ['federation' => 'ACME', 'logdest' => 'local', 'logconfig' => ['processname' => 'phpunit']],
             self::$minRequest,
         );
