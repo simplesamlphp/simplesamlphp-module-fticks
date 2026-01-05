@@ -62,7 +62,7 @@ class Fticks extends Auth\ProcessingFilter
     /** @var string The logging backend */
     private string $logdest = 'simplesamlphp';
 
-    /** @var array Backend specific logging config */
+    /** @var array<mixed> Backend specific logging config */
     private array $logconfig = [];
 
     /** @var string The username attribute to use */
@@ -74,7 +74,7 @@ class Fticks extends Auth\ProcessingFilter
     /** @var string The hashing algorithm to use */
     private string $algorithm = 'sha256';
 
-    /** @var array F-ticks attributes to exclude */
+    /** @var array<mixed> F-ticks attributes to exclude */
     private array $exclude = [];
 
     /** @var string Enable legacy handing of PN (for backwards compatibility) */
@@ -151,7 +151,7 @@ class Fticks extends Auth\ProcessingFilter
     /**
      * Generate a PN hash
      *
-     * @param  array $state
+     * @param  array<mixed> $state
      * @return string|null $hash
      */
     private function generatePNhash(array &$state): ?string
@@ -209,7 +209,7 @@ class Fticks extends Auth\ProcessingFilter
     /**
      * Initialize this filter, parse configuration.
      *
-     * @param  array $config Configuration information about this filter.
+     * @param  array<mixed> $config Configuration information about this filter.
      * @param  mixed $reserved For future use.
      * @throws \SimpleSAML\Error\Exception
      */
@@ -345,7 +345,7 @@ class Fticks extends Auth\ProcessingFilter
     /**
      * Process this filter
      *
-     * @param  mixed &$state
+     * @param array<mixed> &$state
      */
     public function process(array &$state): void
     {
@@ -427,9 +427,6 @@ class Fticks extends Auth\ProcessingFilter
 
     /**
      * Callback method to filter excluded attributes
-     *
-     * @param string $attr
-     * @return bool
      */
     private function filterExcludedAttributes(string $attr): bool
     {
@@ -440,8 +437,7 @@ class Fticks extends Auth\ProcessingFilter
     /**
      * Assemble fticks log string
      *
-     * @param array $fticks
-     * @return string
+     * @param array<mixed> $fticks
      */
     private function assembleFticksLogString(array $fticks): string
     {
@@ -449,11 +445,8 @@ class Fticks extends Auth\ProcessingFilter
             '#',
             array_map(
                 /**
-                 * @param  string $k
-                 * @param  string $v
-                 * @return string
                  */
-                function ($k, $v) {
+                function (string $k, string $v): string {
                     return $k . '=' . $this->escapeFticks(strval($v));
                 },
                 array_keys($fticks),

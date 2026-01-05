@@ -407,6 +407,7 @@ final class FticksTest extends TestCase
         $this->assertEquals($request, $result);
     }
 
+
     /**
      */
     public function testInvalidConfig(): void
