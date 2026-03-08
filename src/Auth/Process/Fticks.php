@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\fticks\Auth\Process;
 
-use SimpleSAML\SAML2\Constants as C;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Auth;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
+use SimpleSAML\SAML2\Constants as C;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
 
