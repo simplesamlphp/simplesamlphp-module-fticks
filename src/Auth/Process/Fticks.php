@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\fticks\Auth\Process;
 
-use SAML2\Constants;
+use SimpleSAML\SAML2\Constants as C;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Auth;
 use SimpleSAML\Configuration;
@@ -384,7 +384,7 @@ class Fticks extends Auth\ProcessingFilter
             && preg_match('/UserPass/', $state['SimpleSAML_Auth_State.stage'])
         ) {
             /* hack to try identify LDAP et al as Password */
-            $fticks['AM'] = Constants::AC_PASSWORD;
+            $fticks['AM'] = C::AC_PASSWORD;
         }
 
         /* ePTID */
