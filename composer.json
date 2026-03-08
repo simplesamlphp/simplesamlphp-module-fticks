@@ -34,7 +34,7 @@
 
         "simplesamlphp/assert": "^2.0",
         "simplesamlphp/composer-module-installer": "^1.7",
-        "simplesamlphp/saml2-legacy": "^4.20",
+        "simplesamlphp/saml2": "^6.1",
         "simplesamlphp/simplesamlphp": "^2.5@dev"
     },
     "require-dev": {
